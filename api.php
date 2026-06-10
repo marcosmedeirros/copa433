@@ -259,12 +259,24 @@ switch ($action) {
                 break;
             }
 
-            $colPos      = hasColumn($pdo, 'jogadores', 'posicoes') ? 'posicoes' : (hasColumn($pdo, 'jogadores', 'posicao') ? 'posicao' : 'NULL');
+            // Detecta colunas de posição do jogador (vários nomes possíveis)
+            if (hasColumn($pdo, 'jogadores', 'posicoes')) {
+                $colPos = 'j.posicoes';
+            } elseif (hasColumn($pdo, 'jogadores', 'posicao')) {
+                $colPos = 'j.posicao';
+            } elseif (hasColumn($pdo, 'jogadores', 'posicao1')) {
+                $hasPosicao2 = hasColumn($pdo, 'jogadores', 'posicao2');
+                $colPos = $hasPosicao2
+                    ? "CONCAT(j.posicao1, IF(j.posicao2 IS NOT NULL AND j.posicao2 != '', CONCAT('/', j.posicao2), ''))"
+                    : 'j.posicao1';
+            } else {
+                $colPos = "'MEI'"; // fallback literal
+            }
             $colTipoJog  = hasColumn($pdo, 'jogadores', 'tipo') ? 'j.tipo' : (hasColumn($pdo, 'jogadores', 'era') ? 'j.era' : 'NULL');
             $colTipoTime = hasColumn($pdo, 'times', 'tipo')     ? 't.tipo' : ($hasEraT ? 't.era' : 'NULL');
 
             $jogs = $pdo->query("
-                SELECT j.id, j.nome, j.$colPos AS pos_raw, j.rating, j.time_id,
+                SELECT j.id, j.nome, $colPos AS pos_raw, j.rating, j.time_id,
                        COALESCE($colTipoJog, $colTipoTime, 'GERAL') AS tipo,
                        t.nome AS time_nome, $colSiglaJoin
                 FROM jogadores j
