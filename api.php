@@ -175,28 +175,31 @@ switch ($action) {
         $stats = $pdo->prepare("
             SELECT COUNT(*) tentativas,
                    SUM(CASE WHEN campeao = 1 THEN 1 ELSE 0 END) vitorias,
-                   SUM(CASE WHEN campeao = 0 THEN 1 ELSE 0 END) derrotas
+                   SUM(CASE WHEN campeao = 0 THEN 1 ELSE 0 END) derrotas,
+                   MAX(ovr) melhor_ovr,
+                   MAX(pontos) melhor_pontos
             FROM partidas_usuario
             WHERE usuario_id = ?
         ");
         $stats->execute([$uid]);
-        $s = $stats->fetch() ?: ['tentativas' => 0, 'vitorias' => 0, 'derrotas' => 0];
+        $s = $stats->fetch() ?: ['tentativas' => 0, 'vitorias' => 0, 'derrotas' => 0, 'melhor_ovr' => 0, 'melhor_pontos' => 0];
 
-        $wins = $pdo->prepare("
-            SELECT id, pontos, ovr, time_nome, msg, escalacao_json, criado_em
+        $recentes = $pdo->prepare("
+            SELECT id, campeao, pontos, ovr, time_nome, msg, escalacao_json, criado_em
             FROM partidas_usuario
-            WHERE usuario_id = ? AND campeao = 1
+            WHERE usuario_id = ?
             ORDER BY criado_em DESC
-            LIMIT 30
+            LIMIT 20
         ");
-        $wins->execute([$uid]);
-        $vitorias = $wins->fetchAll();
-        foreach ($vitorias as &$w) {
-            $w['escalacao'] = json_decode((string)($w['escalacao_json'] ?? '[]'), true) ?: [];
-            unset($w['escalacao_json']);
+        $recentes->execute([$uid]);
+        $partidas = $recentes->fetchAll();
+        foreach ($partidas as &$p) {
+            $p['escalacao'] = json_decode((string)($p['escalacao_json'] ?? '[]'), true) ?: [];
+            $p['campeao'] = (bool)$p['campeao'];
+            unset($p['escalacao_json']);
         }
-        unset($w);
-        echo json_encode(['usuario' => $u, 'stats' => $s, 'vitorias' => $vitorias]);
+        unset($p);
+        echo json_encode(['usuario' => $u, 'stats' => $s, 'partidas' => $partidas]);
         break;
 
     case 'salvar_partida':
@@ -223,55 +226,84 @@ switch ($action) {
         break;
 
     case 'draft_init':
-        $times = $pdo->query("SELECT id, nome, sigla, cor_primaria FROM times ORDER BY nome")->fetchAll();
+        try {
+            // Auto-cria rankings se não existir
+            $pdo->exec("
+                CREATE TABLE IF NOT EXISTS rankings (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    usuario VARCHAR(100) NOT NULL,
+                    pontos INT NOT NULL DEFAULT 0,
+                    time_sorteado INT NOT NULL,
+                    decada_sorteada VARCHAR(40) NULL,
+                    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_pontos (pontos DESC)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+            ");
 
-        $colPos = hasColumn($pdo, 'jogadores', 'posicoes') ? 'posicoes' : 'posicao';
-        $colTipoJog = hasColumn($pdo, 'jogadores', 'tipo') ? 'j.tipo' : 'NULL';
-        $colTipoTime = hasColumn($pdo, 'times', 'tipo') ? 't.tipo' : 'NULL';
-        $jogs = $pdo->query("
-            SELECT j.id, j.nome, j.$colPos AS pos_raw, j.rating, j.time_id,
-                   COALESCE($colTipoJog, $colTipoTime, 'GERAL') AS tipo,
-                   t.nome AS time_nome, t.sigla
-            FROM jogadores j
-            JOIN times t ON t.id = j.time_id
-            ORDER BY j.rating DESC, j.nome ASC
-        ")->fetchAll();
+            $colCorPrimaria = hasColumn($pdo, 'times', 'cor_primaria') ? 'cor_primaria' : "NULL AS cor_primaria";
+            $times = $pdo->query("SELECT id, nome, sigla, $colCorPrimaria FROM times ORDER BY nome")->fetchAll();
 
-        $combos = [];
-        foreach ($jogs as &$j) {
-            $raw = trim((string)($j['pos_raw'] ?? ''));
-            $parts = preg_split('/[\/,\-\|]+/u', $raw);
-            $posicoes = [];
-            foreach ($parts as $p) {
-                $p = strtoupper(trim($p));
-                if ($p !== '') $posicoes[$p] = true;
+            if (empty($times)) {
+                echo json_encode(['times' => [], 'jogadores' => [], 'combos' => [], 'aviso' => 'Banco sem times. Importe o SQL de seed.']);
+                break;
             }
-            if (!$posicoes) $posicoes['MEI'] = true;
-            $j['posicoes'] = array_keys($posicoes);
-            $j['posicao'] = $j['posicoes'][0];
-            $j['rating'] = intval($j['rating'] ?? 0);
-            $j['decada'] = trim((string)($j['tipo'] ?? 'GERAL')); // compatibilidade frontend legado
-            $j['nome_base'] = nomeBase((string)$j['nome']);
-            unset($j['pos_raw']);
 
-            foreach ($j['posicoes'] as $pos) {
-                $chave = intval($j['time_id']) . '_' . $j['decada'];
-                if (!isset($combos[$pos])) $combos[$pos] = [];
-                if (!isset($combos[$pos][$chave])) {
-                    $combos[$pos][$chave] = [
-                        'time_id'   => intval($j['time_id']),
-                        'sigla'     => $j['sigla'],
-                        'time_nome' => $j['time_nome'],
-                        'decada'    => $j['decada'],
-                    ];
+            $colPos    = hasColumn($pdo, 'jogadores', 'posicoes') ? 'posicoes' : (hasColumn($pdo, 'jogadores', 'posicao') ? 'posicao' : 'NULL');
+            $colTipoJog  = hasColumn($pdo, 'jogadores', 'tipo') ? 'j.tipo' : 'NULL';
+            $colTipoTime = hasColumn($pdo, 'times', 'tipo')     ? 't.tipo' : 'NULL';
+
+            $jogs = $pdo->query("
+                SELECT j.id, j.nome, j.$colPos AS pos_raw, j.rating, j.time_id,
+                       COALESCE($colTipoJog, $colTipoTime, 'GERAL') AS tipo,
+                       t.nome AS time_nome, t.sigla
+                FROM jogadores j
+                JOIN times t ON t.id = j.time_id
+                ORDER BY j.rating DESC, j.nome ASC
+            ")->fetchAll();
+
+            $combos = [];
+            foreach ($jogs as &$j) {
+                $raw = trim((string)($j['pos_raw'] ?? ''));
+                $parts = preg_split('/[\/,\-\|]+/u', $raw);
+                $posicoes = [];
+                foreach ($parts as $p) {
+                    $p = strtoupper(trim($p));
+                    if ($p !== '') $posicoes[$p] = true;
+                }
+                if (!$posicoes) $posicoes['MEI'] = true;
+                $j['posicoes']   = array_keys($posicoes);
+                $j['posicao']    = $j['posicoes'][0];
+                $j['rating']     = intval($j['rating'] ?? 0);
+                $j['decada']     = trim((string)($j['tipo'] ?? 'GERAL'));
+                $j['nome_base']  = nomeBase((string)$j['nome']);
+                unset($j['pos_raw']);
+
+                foreach ($j['posicoes'] as $pos) {
+                    $chave = intval($j['time_id']) . '_' . $j['decada'];
+                    if (!isset($combos[$pos]))        $combos[$pos] = [];
+                    if (!isset($combos[$pos][$chave])) {
+                        $combos[$pos][$chave] = [
+                            'time_id'   => intval($j['time_id']),
+                            'sigla'     => $j['sigla'],
+                            'time_nome' => $j['time_nome'],
+                            'decada'    => $j['decada'],
+                        ];
+                    }
                 }
             }
-        }
-        unset($j);
+            unset($j);
 
-        $combosOut = [];
-        foreach ($combos as $pos => $lista) $combosOut[$pos] = array_values($lista);
-        echo json_encode(['times' => $times, 'jogadores' => $jogs, 'combos' => $combosOut]);
+            $combosOut = [];
+            foreach ($combos as $pos => $lista) $combosOut[$pos] = array_values($lista);
+
+            $out = json_encode(['times' => $times, 'jogadores' => $jogs, 'combos' => $combosOut], JSON_UNESCAPED_UNICODE);
+            if ($out === false) throw new RuntimeException('Erro ao serializar dados: ' . json_last_error_msg());
+            echo $out;
+
+        } catch (Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['erro' => 'Erro ao carregar dados: ' . $e->getMessage()]);
+        }
         break;
 
     case 'salvar_ranking':
@@ -279,6 +311,7 @@ switch ($action) {
         $usuario = substr(trim($body['usuario'] ?? 'Anonimo'), 0, 100);
         $pontos  = intval($body['pontos'] ?? 0);
         $time_id = intval($body['time_id'] ?? 0);
+        $decada  = substr(trim((string)($body['decada'] ?? '')), 0, 40);
 
         if (!$pontos || !$time_id) {
             http_response_code(400);
@@ -289,7 +322,7 @@ switch ($action) {
         $temDecada = hasColumn($pdo, 'rankings', 'decada_sorteada');
         if ($temDecada) {
             $stmt = $pdo->prepare("INSERT INTO rankings (usuario, pontos, time_sorteado, decada_sorteada) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$usuario, $pontos, $time_id, null]);
+            $stmt->execute([$usuario, $pontos, $time_id, $decada ?: null]);
         } else {
             $stmt = $pdo->prepare("INSERT INTO rankings (usuario, pontos, time_sorteado) VALUES (?, ?, ?)");
             $stmt->execute([$usuario, $pontos, $time_id]);

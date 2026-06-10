@@ -240,6 +240,54 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
 .divider{border:none;border-top:1px solid var(--c3);margin:20px 0}
 .center{text-align:center}
 
+/* TABS (modal conta) */
+.tabs{display:flex;gap:0;border-radius:10px;overflow:hidden;border:1.5px solid var(--c3);margin-bottom:16px}
+.tab{flex:1;background:transparent;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:10px;border:none;cursor:pointer;transition:.15s}
+.tab.active{background:var(--verde);color:#000}
+
+/* LOG DO DRAFT */
+.draft-log{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.log-item{display:flex;align-items:center;gap:10px;background:var(--c1);border-radius:9px;padding:9px 12px;border:1px solid var(--c3);animation:fade .3s ease both}
+.log-pos{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;background:var(--verde);color:#000;padding:2px 7px;border-radius:6px;letter-spacing:.5px;white-space:nowrap}
+.log-nome{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log-era{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--txt2);white-space:nowrap}
+
+/* CAMPANHA TIMELINE */
+.campanha{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.camp-item{display:flex;align-items:center;gap:12px;background:var(--c1);border-radius:9px;padding:10px 14px;border:1px solid var(--c3)}
+.camp-fase{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;color:var(--txt2);text-transform:uppercase;min-width:110px}
+.camp-res{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--verde)}
+.camp-res.elim{color:#ff7676}
+.camp-section-t{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--txt2);text-transform:uppercase;margin:14px 0 6px}
+
+/* HISTÓRICO PARTIDAS */
+.partida-item{background:var(--c1);border-radius:var(--radius);padding:12px 14px;border:1px solid var(--c3);margin-bottom:8px}
+.partida-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.partida-badge{font-size:20px;line-height:1}
+.partida-info{flex:1;min-width:0}
+.partida-time{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.partida-meta{font-size:11px;color:var(--txt2)}
+.partida-pts{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--verde);line-height:1}
+.partida-pts.derrota{color:var(--c5)}
+.partida-esc{font-size:11px;color:var(--txt2);line-height:1.6;margin-top:4px}
+
+/* STATS RESUMO */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.stat-box{background:var(--c1);border-radius:var(--radius);padding:14px 10px;text-align:center;border:1px solid var(--c3)}
+.stat-n{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--verde);line-height:1}
+.stat-l{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;color:var(--txt2);text-transform:uppercase;margin-top:3px}
+
+/* OUTROS RESULTADOS */
+.outros-box{background:var(--c1);border:1px solid var(--c3);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:none}
+.outros-t{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1.5px;color:var(--txt2);text-transform:uppercase;margin-bottom:6px}
+.outros-jogo{display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:13px;padding:2px 0}
+.outros-jogo .oj-t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.outros-jogo .oj-s{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--txt2);padding:0 4px;white-space:nowrap}
+
+/* HOME status chip */
+.conta-chip{display:inline-flex;align-items:center;gap:6px;background:var(--c2);border:1px solid var(--c3);border-radius:20px;padding:6px 12px;font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--txt2);margin-bottom:4px}
+.conta-chip.logado{border-color:var(--verde);color:var(--verde)}
+
 /* RODAPE */
 .rodape{text-align:center;padding:24px 16px 32px;font-size:12px;color:var(--txt2);line-height:1.5}
 .rodape a{color:var(--verde);text-decoration:none;font-weight:600}
@@ -252,37 +300,29 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
 
 <header class="header">
   <div class="h-logo">COPA<span>433</span></div>
-  <div style="display:flex;gap:8px">
-    <button class="btn-top" onclick="irConta()">👤 CONTA</button>
-    <button class="btn-top" onclick="irRanking()">🏆 TOP 20</button>
+  <div>
+    <button class="btn-top" id="btn-conta-hdr" onclick="abrirContaModal()">👤 Entrar</button>
   </div>
 </header>
 
 <div class="load" id="load"><div class="spin"></div></div>
 <div class="toast" id="toast"></div>
 
-<div class="modal" id="modal">
-  <div class="sheet">
-    <div class="sheet-t">Salvar no ranking</div>
-    <div class="sheet-d">Qual nome vai aparecer no ranking global?</div>
-    <input class="sheet-in" id="modal-in" type="text" placeholder="Seu nome ou @" maxlength="30">
-    <div class="sheet-a">
-      <button class="btn btn-secondary btn-sm" onclick="fecharModal()">Cancelar</button>
-      <button class="btn btn-primary btn-sm" onclick="confirmarRanking()">Salvar</button>
-    </div>
-  </div>
-</div>
-
 <!-- HOME -->
 <section id="screen-home" class="screen active">
   <div class="hero">
     <div class="hero-pts">433<span>⚽</span></div>
     <div class="hero-sub">COPA433</div>
-    <p class="hero-desc">Gire a roleta para sortear <b>tipo + time</b>. Escolha os jogadores, monte seu 4-3-3 e dispute a <b>COPA433</b> simulando apenas os jogos do seu time.</p>
+    <p class="hero-desc">Gire a roleta para sortear um <b>time histórico</b>. Escolha 1 jogador, gire de novo. Monte seu 4-3-3 e dispute a <b>COPA433</b> contra os maiores times da história.</p>
+  </div>
+  <div style="text-align:center;padding:0 16px 4px">
+    <div class="conta-chip" id="home-conta-chip" onclick="abrirContaModal()" style="cursor:pointer">
+      <span>👤</span><span id="home-conta-label">Entrar para salvar histórico</span>
+    </div>
   </div>
   <div class="steps">
-    <div class="step"><div class="step-n">01</div><div class="step-l">Gire<br>tipo + time</div></div>
-    <div class="step"><div class="step-n">02</div><div class="step-l">Escolha e<br>posicione</div></div>
+    <div class="step"><div class="step-n">01</div><div class="step-l">Gire a<br>roleta</div></div>
+    <div class="step"><div class="step-n">02</div><div class="step-l">Escolha<br>1 jogador</div></div>
     <div class="step"><div class="step-n">03</div><div class="step-l">Dispute a<br>Copa</div></div>
   </div>
   <div class="modos">
@@ -290,31 +330,18 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
     <div class="modo-cards">
       <div class="modo sel" id="modo-classico" onclick="selModo('classico')">
         <span class="modo-chk">✓</span><div class="modo-n">Clássico</div>
-        <div class="modo-d">Você vê o rating de cada jogador.</div>
+        <div class="modo-d">Você vê o rating de cada jogador. 2 giros extras.</div>
       </div>
       <div class="modo" id="modo-memoria" onclick="selModo('memoria')">
         <span class="modo-chk">✓</span><div class="modo-n">Memória</div>
-        <div class="modo-d">Sem ratings. Só seu conhecimento.</div>
+        <div class="modo-d">Sem ratings. Só seu conhecimento. 1 giro extra.</div>
       </div>
     </div>
   </div>
   <div class="cta">
-    <button class="btn btn-primary" style="font-size:22px;padding:18px" onclick="comecarDraft()">⚽ COMEÇAR COPA433</button>
+    <button class="btn btn-primary" style="font-size:22px;padding:18px" onclick="comecarDraft()">⚽ JOGAR!</button>
   </div>
-  <div class="grupo-box" style="margin:14px 16px 0">
-    <div class="grupo-t">Conta (opcional)</div>
-    <div id="conta-status" class="center" style="font-size:13px;color:var(--txt2);margin-bottom:10px">Não logado</div>
-    <input class="sheet-in" id="conta-user" type="text" placeholder="Usuário" maxlength="80" style="font-size:18px;padding:10px 12px;margin-bottom:8px">
-    <input class="sheet-in" id="conta-pass" type="password" placeholder="Senha" maxlength="80" style="font-size:18px;padding:10px 12px;margin-bottom:8px">
-    <input class="sheet-in" id="conta-time" type="text" placeholder="Nome do seu time (se logado)" maxlength="80" style="font-size:18px;padding:10px 12px;margin-bottom:8px">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <button class="btn btn-secondary btn-sm" onclick="contaLogin()">Entrar</button>
-      <button class="btn btn-primary btn-sm" onclick="contaRegistrar()">Criar conta</button>
-      <button class="btn btn-amarelo btn-sm" onclick="contaSalvarTime()">Salvar nome do time</button>
-      <button class="btn btn-secondary btn-sm" onclick="contaLogout()">Sair</button>
-    </div>
-  </div>
-  <footer class="rodape">
+  <footer class="rodape" style="margin-top:16px">
     Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">Marcos Medeiros</a>
     <span class="sep">·</span>
     <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
@@ -324,15 +351,21 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
 <!-- CONTA / HISTÓRICO -->
 <section id="screen-conta" class="screen">
   <div class="rk-t">👤 MINHA CONTA</div>
-  <div class="grupo-box">
-    <div class="grupo-t">Resumo</div>
-    <div id="conta-resumo" class="center" style="color:var(--txt2);padding:8px 0">Faça login para ver seu histórico.</div>
+  <div id="conta-nao-logado" class="grupo-box center" style="color:var(--txt2);padding:20px">
+    Faça login para ver seu histórico.
+    <div style="margin-top:12px"><button class="btn btn-primary btn-sm" onclick="abrirContaModal()">Entrar / Criar conta</button></div>
   </div>
-  <div class="grupo-box">
-    <div class="grupo-t">Vitórias e escalações</div>
-    <div id="conta-vitorias" class="center" style="color:var(--txt2);padding:8px 0">—</div>
+  <div id="conta-logado-area" style="display:none">
+    <div class="grupo-box">
+      <div class="grupo-t">Resumo · <span id="conta-nome-exib" style="color:var(--verde)"></span></div>
+      <div class="stats-grid" id="conta-stats-grid"></div>
+    </div>
+    <div>
+      <div class="camp-section-t">Últimas partidas</div>
+      <div id="conta-partidas"><div class="center" style="color:var(--c5);padding:20px">Nenhuma partida ainda.</div></div>
+    </div>
   </div>
-  <div class="center"><button class="btn btn-secondary btn-sm" onclick="irHome()">← Início</button></div>
+  <div class="center" style="margin-top:16px"><button class="btn btn-secondary btn-sm" onclick="irHome()">← Início</button></div>
   <footer class="rodape">
     Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">Marcos Medeiros</a>
     <span class="sep">·</span>
@@ -381,13 +414,14 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
 
   <div class="draft-acoes">
     <button class="btn btn-primary" id="btn-girar" onclick="girarRoleta()" style="font-size:20px;padding:16px">🎰 GIRAR ROLETA</button>
-    <button class="btn btn-amarelo" id="btn-simular" onclick="iniciarCopa()" style="display:none;font-size:20px;padding:16px">🏆 DISPUTAR A COPA</button>
+    <button class="btn btn-amarelo" id="btn-simular" onclick="pedirNomeTime()" style="display:none;font-size:20px;padding:16px">🏆 DISPUTAR A COPA</button>
     <button class="btn btn-secondary btn-sm" onclick="irHome()">← Recomeçar</button>
   </div>
   <div class="reroll-info" id="reroll-info">
     Giros extras: <span class="reroll-dots" id="reroll-dots"></span>
   </div>
-    <div class="draft-hint" id="draft-hint">A roleta sorteia um tipo e um time. Escolha quem entra no seu XI.</div>
+  <div class="draft-hint" id="draft-hint">A roleta sorteia um time histórico. Escolha 1 jogador por giro.</div>
+  <div id="draft-log" class="draft-log"></div>
 </section>
 
 <!-- COPA433 -->
@@ -418,6 +452,12 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
     </div>
   </div>
 
+  <!-- outros resultados da rodada -->
+  <div class="outros-box" id="outros-box">
+    <div class="outros-t">Outros resultados da rodada</div>
+    <div id="outros-lista"></div>
+  </div>
+
   <!-- área dinâmica: tabela de grupos OU chaveamento -->
   <div id="copa-area"></div>
 
@@ -434,6 +474,62 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
   </footer>
 </section>
 
+<!-- modal: conta -->
+<div class="modal" id="modal-conta" onclick="if(event.target===this)fecharContaModal()">
+  <div class="sheet">
+    <!-- view: não logado -->
+    <div id="mc-deslogado">
+      <div class="sheet-t">Minha Conta</div>
+      <div class="sheet-d">Entre ou crie uma conta para salvar seu histórico.</div>
+      <div class="tabs">
+        <button class="tab active" id="tab-login-btn" onclick="setContaTab('login')">Entrar</button>
+        <button class="tab" id="tab-reg-btn" onclick="setContaTab('reg')">Criar conta</button>
+      </div>
+      <div id="mc-login-body">
+        <input class="sheet-in" id="c-user" type="text" placeholder="Usuário" maxlength="80" autocomplete="username" onkeydown="if(event.key==='Enter')$('c-pass').focus()">
+        <input class="sheet-in" id="c-pass" type="password" placeholder="Senha" maxlength="80" autocomplete="current-password" style="margin-top:8px" onkeydown="if(event.key==='Enter')contaLogin()">
+        <div class="sheet-a">
+          <button class="btn btn-secondary btn-sm" onclick="fecharContaModal()">Cancelar</button>
+          <button class="btn btn-primary btn-sm" onclick="contaLogin()">Entrar</button>
+        </div>
+      </div>
+      <div id="mc-reg-body" style="display:none">
+        <input class="sheet-in" id="r-user" type="text" placeholder="Usuário" maxlength="80" autocomplete="username" onkeydown="if(event.key==='Enter')$('r-pass').focus()">
+        <input class="sheet-in" id="r-pass" type="password" placeholder="Senha (mín. 4 caracteres)" maxlength="80" autocomplete="new-password" style="margin-top:8px" onkeydown="if(event.key==='Enter')$('r-time').focus()">
+        <input class="sheet-in" id="r-time" type="text" placeholder="Nome do seu time (opcional)" maxlength="80" style="margin-top:8px" onkeydown="if(event.key==='Enter')contaRegistrar()">
+        <div class="sheet-a">
+          <button class="btn btn-secondary btn-sm" onclick="fecharContaModal()">Cancelar</button>
+          <button class="btn btn-primary btn-sm" onclick="contaRegistrar()">Criar conta</button>
+        </div>
+      </div>
+    </div>
+    <!-- view: logado -->
+    <div id="mc-logado" style="display:none">
+      <div class="sheet-t" id="mc-logado-nome">Minha Conta</div>
+      <div class="sheet-d">Gerencie suas preferências.</div>
+      <input class="sheet-in" id="c-nome-time" type="text" placeholder="Nome do seu time" maxlength="80">
+      <div class="sheet-a" style="margin-top:10px">
+        <button class="btn btn-amarelo btn-sm" onclick="contaSalvarTime()">Salvar nome</button>
+        <button class="btn btn-secondary btn-sm" onclick="contaLogout()">Sair</button>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="irConta();fecharContaModal()" style="margin-top:8px">Ver histórico completo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- modal: nome do time (antes de iniciar Copa) -->
+<div class="modal" id="modal-nome" onclick="if(event.target===this)fecharNomeModal()">
+  <div class="sheet">
+    <div class="sheet-t">Seu time tem nome?</div>
+    <div class="sheet-d">Como vai chamar seu XI na Copa433?</div>
+    <input class="sheet-in" id="nome-time-input" type="text" placeholder="Ex: Os Imortais, Dream Team..." maxlength="80" onkeydown="if(event.key==='Enter')confirmarNomeTime()">
+    <div class="sheet-a">
+      <button class="btn btn-secondary btn-sm" onclick="fecharNomeModal();iniciarCopa()">Pular</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmarNomeTime()">Confirmar →</button>
+    </div>
+  </div>
+</div>
+
 <!-- modal: meu XI -->
 <div class="modal" id="modal-xi">
   <div class="sheet">
@@ -443,18 +539,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-h
   </div>
 </div>
 
-<!-- RANKING -->
-<section id="screen-ranking" class="screen">
-  <div class="rk-t">🏆 RANKING GLOBAL</div>
-  <div class="rk-list" id="rk-list"><div class="center" style="color:var(--c5);padding:30px">Carregando…</div></div>
-  <hr class="divider">
-  <div class="center"><button class="btn btn-secondary btn-sm" onclick="irHome()">← Início</button></div>
-  <footer class="rodape">
-    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">Marcos Medeiros</a>
-    <span class="sep">·</span>
-    <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
-  </footer>
-</section>
 
 </div>
 
@@ -571,6 +655,7 @@ async function comecarDraft(){
   S.xi={};S.comboAtual=null;S.jogadorSel=null;S.resultado=null;
   S.rerollUsados=0;S.girouNestaRodada=false;S.rolando=false;
   S.rerollMax=(S.modo==='memoria')?1:2;
+  const logEl=$('draft-log');if(logEl)logEl.innerHTML='';
   montarCampo();
   atualizarProgresso();
   prepararRodada();
@@ -805,10 +890,21 @@ function posicionar(k){
   S.xi[k]={id:j.id,nome:j.nome,nome_base:(j.nome_base||j.nome),posicao:pSlot,rating:j.rating,decada:j.decada,
            sigla:S.comboAtual.sigla,time_nome:S.comboAtual.time_nome,time_id:S.comboAtual.time_id};
   marcarSlot(k,S.xi[k]);
+  adicionarLogDraft(pSlot,j);
   S.jogadorSel=null;
   limparAlvos();
   atualizarProgresso();
   prepararRodada();
+}
+
+function adicionarLogDraft(pos,j){
+  const log=$('draft-log');if(!log)return;
+  const item=document.createElement('div');
+  item.className='log-item';
+  const ratTxt=S.modo==='classico'?` · <b style="color:var(--amarelo)">${j.rating}</b>`:'';
+  item.innerHTML=`<span class="log-pos">${esc(pos)}</span><span class="log-nome">${esc(j.nome)}${ratTxt}</span><span class="log-era">${esc(j.sigla)} '${String(j.decada).slice(-2)}</span>`;
+  log.insertBefore(item,log.firstChild);
+  while(log.children.length>5)log.removeChild(log.lastChild);
 }
 
 function limparAlvos(){document.querySelectorAll('.slot.alvo').forEach(s=>s.classList.remove('alvo'));}
@@ -828,7 +924,18 @@ function atualizarProgresso(){
 
 // ===== COPA433 =====
 const C={meu:null,adversarios:[],grupo:[],meusJogosGrupo:[],outrosJogosGrupo:[],idxGrupo:0,
-         fase:'grupos',mata:{},rodadaMata:null,jogoAtual:null,campanha:[]};
+         fase:'grupos',mata:{},rodadaMata:null,jogoAtual:null,campanha:[],
+         golsMarcados:0,golsSofridos:0,jogosCopa:0};
+
+function renderOutrosResultados(lista){
+  const box=$('outros-box');
+  if(!lista||!lista.length){box.style.display='none';return;}
+  $('outros-lista').innerHTML=lista.map(j=>{
+    const sc=`${j.g1}–${j.g2}${j.pen?` (${j.pen1}–${j.pen2}p)`:''}`;
+    return `<div class="outros-jogo"><span class="oj-t">${esc(j.t1)}</span><span class="oj-s">${sc}</span><span class="oj-t" style="text-align:right">${esc(j.t2)}</span></div>`;
+  }).join('');
+  box.style.display='block';
+}
 
 // OVR médio do meu XI
 function meuOVR(){
@@ -887,6 +994,7 @@ function iniciarCopa(){
   C.idxGrupo=0;
   C.fase='grupos';
   C.campanha=[];
+  C.golsMarcados=0;C.golsSofridos=0;C.jogosCopa=0;
   C.poolMata=escolhidos.slice(3); // 6 restantes para as quartas
 
   tela('copa');
@@ -926,6 +1034,7 @@ function decidirPenaltis(ovr1,ovr2){
 // ---------- FASE DE GRUPOS ----------
 function prepararProximoJogoGrupo(){
   if(C.idxGrupo>=C.meusJogosGrupo.length){ encerrarGrupos(); return; }
+  renderOutrosResultados([]);
   const [i,k]=C.meusJogosGrupo[C.idxGrupo];
   C.jogoAtual={tipo:'grupo',home:C.grupo[i],away:C.grupo[k],hi:i,ki:k,done:false};
   mostrarJogo(C.jogoAtual);
@@ -938,11 +1047,16 @@ function jogarGrupo(){
   const J=C.jogoAtual;
   const r=simularJogo(J.home.ovr,J.away.ovr);
   J.g1=r.g1;J.g2=r.g2;J.done=true;
+  // rastrear gols do usuário
+  C.jogosCopa++;
+  if(J.home.eu){C.golsMarcados+=r.g1;C.golsSofridos+=r.g2;}
+  else{C.golsMarcados+=r.g2;C.golsSofridos+=r.g1;}
   const h=J.home,a=J.away;
   h.P++;a.P++;h.GP+=r.g1;h.GC+=r.g2;a.GP+=r.g2;a.GC+=r.g1;
   if(r.g1>r.g2){h.V++;a.D++;}
   else if(r.g1<r.g2){a.V++;h.D++;}
   else{h.E++;a.E++;}
+  let outrosLista=[];
   const parOutros=C.outrosJogosGrupo[C.idxGrupo];
   if(parOutros){
     const [o1,o2]=parOutros;
@@ -952,8 +1066,10 @@ function jogarGrupo(){
     if(rx.g1>rx.g2){t1.V++;t2.D++;}
     else if(rx.g1<rx.g2){t2.V++;t1.D++;}
     else{t1.E++;t2.E++;}
+    outrosLista=[{t1:t1.label,g1:rx.g1,t2:t2.label,g2:rx.g2}];
   }
   animarPlacar(J,()=>{
+    renderOutrosResultados(outrosLista);
     renderCopa();
     C.idxGrupo++;
     C._next='grupo-next';
@@ -963,13 +1079,14 @@ function jogarGrupo(){
 }
 
 function encerrarGrupos(){
-  // classificação: pts, saldo, GP
   const tab=[...C.grupo].sort(ordenarTabela);
   const classif=tab.slice(0,2);
   const euClassificou=classif.some(t=>t.eu);
-  C.campanha.push({fase:'Fase de Grupos', txt: euClassificou?'Classificado em '+(tab.findIndex(t=>t.eu)+1)+'º':'Eliminado na fase de grupos'});
+  const eu=C.grupo.find(t=>t.eu);
+  const pos=tab.findIndex(t=>t.eu)+1;
+  const rec=eu?`${eu.V}V ${eu.E}E ${eu.D}D`:'';
+  C.campanha.push({fase:'Fase de Grupos', txt: euClassificou?`${pos}º lugar · ${rec}`:'Eliminado · '+rec});
   if(!euClassificou){ fimDaCopa(false,'Eliminado na fase de grupos'); return; }
-  // monta mata-mata: quartas com 8 times (eu + 1 do grupo + 6 do pool)
   iniciarMataMata(classif);
 }
 function ordenarTabela(a,b){
@@ -1011,6 +1128,7 @@ function emparelhar(arr){
 const FASE_NOME={quartas:'Quartas de Final',semis:'Semifinal',final:'Final'};
 
 function prepararProximoJogoMata(){
+  renderOutrosResultados([]);
   const jogos=C.mata[C.rodadaMata];
   jogos.forEach(j=>{
     if(!j.done && !(j.home.eu||j.away.eu)){
@@ -1037,6 +1155,10 @@ function jogarMata(){
   const J=C.jogoAtual;
   const r=simularJogo(J.home.ovr,J.away.ovr);
   J.g1=r.g1;J.g2=r.g2;
+  // rastrear gols do usuário
+  C.jogosCopa++;
+  if(J.home.eu){C.golsMarcados+=r.g1;C.golsSofridos+=r.g2;}
+  else{C.golsMarcados+=r.g2;C.golsSofridos+=r.g1;}
   let venc;
   if(r.g1!==r.g2){ venc = r.g1>r.g2?J.home:J.away; }
   else {
@@ -1046,16 +1168,24 @@ function jogarMata(){
   }
   J.venc=venc;J.done=true;
   J.ref.g1=J.g1;J.ref.g2=J.g2;J.ref.pen=J.pen;J.ref.pen1=J.pen1;J.ref.pen2=J.pen2;J.ref.venc=venc;J.ref.done=true;
+  // montar outros resultados desta rodada (jogos já simulados antes do nosso)
+  const outrosLista=C.mata[C.rodadaMata]
+    .filter(j=>j.done && !j.home.eu && !j.away.eu)
+    .map(j=>({t1:j.home.label,g1:j.g1,t2:j.away.label,g2:j.g2,pen:j.pen,pen1:j.pen1,pen2:j.pen2}));
   animarPlacar(J,()=>{
+    renderOutrosResultados(outrosLista);
     renderCopa();
     const euPerdeu = (J.home.eu||J.away.eu) && !venc.eu;
+    const sc=`${J.g1}–${J.g2}${J.pen?` (${J.pen1}–${J.pen2}p)`:''}`;
+    const opp=(J.home.eu?J.away:J.home).label;
     if(euPerdeu){
-      C.campanha.push({fase:FASE_NOME[C.rodadaMata],txt:'Eliminado'});
+      C.campanha.push({fase:FASE_NOME[C.rodadaMata],txt:`Eliminado · ${sc} vs ${esc(opp)}`});
       fimDaCopa(false,'Eliminado n'+(C.rodadaMata==='final'?'a Final':(C.rodadaMata==='semis'?'a Semifinal':'as Quartas')));
       return;
     }
     if(J.home.eu||J.away.eu){
-      C.campanha.push({fase:FASE_NOME[C.rodadaMata],txt:'Classificado'});
+      const txt=C.rodadaMata==='final'?`CAMPEÃO 🏆 · ${sc}`:`Classificado · ${sc} vs ${esc(opp)}`;
+      C.campanha.push({fase:FASE_NOME[C.rodadaMata],txt});
     }
     C._next='mata-next';
     $('btn-proximo').textContent='▶ AVANÇAR';
@@ -1156,79 +1286,195 @@ function fimDaCopa(campeao,msg){
   $('btn-proximo').style.display='none';
   $('btn-novacopa').style.display='flex';
   $('copa-fase').textContent=campeao?'🏆 CAMPEÃO!':'Fim da campanha';
+
+  // monta campanha timeline
+  let campanhaHtml='';
+  if(C.campanha.length){
+    campanhaHtml=`<div class="camp-section-t">Sua campanha</div><div class="campanha">`+
+      C.campanha.map(c=>{
+        const elim=c.txt.toLowerCase().includes('elim');
+        return `<div class="camp-item"><span class="camp-fase">${esc(c.fase)}</span><span class="camp-res ${elim?'elim':''}">${esc(c.txt)}</span></div>`;
+      }).join('')+'</div>';
+  }
+
+  const statsHtml=`<div class="camp-section-t">Estatísticas do torneio</div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-n">${C.jogosCopa}</div><div class="stat-l">Jogos</div></div>
+      <div class="stat-box"><div class="stat-n" style="color:var(--amarelo)">${C.golsMarcados}</div><div class="stat-l">Gols marcados</div></div>
+      <div class="stat-box"><div class="stat-n" style="color:#ff7676">${C.golsSofridos}</div><div class="stat-l">Gols sofridos</div></div>
+    </div>`;
+
   const banner=`<div class="copa-banner ${campeao?'camp':'elim'}">
      <div class="copa-banner-t">${campeao?'🏆 CAMPEÃO DA COPA433!':'❌ '+esc(msg)}</div>
-     <div class="copa-banner-d">${campeao?'Seu XI levantou a taça! OVR '+C.meu.ovr:'Sua campanha terminou aqui. Monte outro time e tente de novo.'}</div></div>`;
+     <div class="copa-banner-d">${campeao?'Seu XI levantou a taça! OVR '+C.meu.ovr:'Sua campanha terminou aqui. Monte outro time e tente de novo.'}</div>
+  </div>${statsHtml}${campanhaHtml}`;
   $('copa-area').insertAdjacentHTML('afterbegin',banner);
-  if(campeao){$('copa-trofeu').textContent='🏆';}
-  // salvar no ranking automaticamente (pontos = fase alcançada + bônus OVR)
+  if(campeao)$('copa-trofeu').textContent='🏆';
+
   let base=20;
   if(campeao)base=100;
   else if(/Final/.test(msg))base=80;
   else if(/Semi/.test(msg))base=60;
   else if(/Quartas/.test(msg))base=40;
-  else base=20; // grupos
   S.resultadoCopa={campeao,msg,ovr:C.meu.ovr,pontos:base+C.meu.ovr};
   salvarPartidaConta();
-  // oferece salvar
-  setTimeout(()=>{ if(campeao) abrirModal(); },700);
   window.scrollTo(0,0);
 }
 
+// ===== CONTA =====
+function atualizarUIconta(){
+  const u=S.conta;
+  const hdr=$('btn-conta-hdr');
+  const chip=$('home-conta-chip');
+  const label=$('home-conta-label');
+  if(u){
+    hdr.textContent='👤 @'+u.usuario;
+    chip.classList.add('logado');
+    label.textContent='@'+u.usuario+(u.nome_time&&u.nome_time!=='Meu Time'?' · '+u.nome_time:'');
+  }else{
+    hdr.textContent='👤 Entrar';
+    chip.classList.remove('logado');
+    label.textContent='Entrar para salvar histórico';
+  }
+}
 async function contaStatus(){
   try{
     const d=await api('conta_status');
     S.conta=d.logado?d.usuario:null;
-    $('conta-status').textContent=S.conta?('Logado como @'+S.conta.usuario):'Não logado';
-    if(S.conta)$('conta-time').value=S.conta.nome_time||'';
+    atualizarUIconta();
+    // preenche campo de nome do time no modal se logado
+    if(S.conta&&$('c-nome-time'))$('c-nome-time').value=S.conta.nome_time||'';
   }catch(e){}
 }
+
+function abrirContaModal(){
+  if(S.conta){
+    // já logado: mostra painel de gerenciamento
+    $('mc-deslogado').style.display='none';
+    $('mc-logado').style.display='block';
+    $('mc-logado-nome').textContent='@'+S.conta.usuario;
+    $('c-nome-time').value=S.conta.nome_time||'';
+  }else{
+    $('mc-deslogado').style.display='block';
+    $('mc-logado').style.display='none';
+    setContaTab('login');
+  }
+  $('modal-conta').classList.add('show');
+}
+function fecharContaModal(){$('modal-conta').classList.remove('show')}
+function setContaTab(t){
+  $('tab-login-btn').classList.toggle('active',t==='login');
+  $('tab-reg-btn').classList.toggle('active',t==='reg');
+  $('mc-login-body').style.display=t==='login'?'block':'none';
+  $('mc-reg-body').style.display=t==='reg'?'block':'none';
+}
+
 async function contaRegistrar(){
-  const usuario=$('conta-user').value.trim(), senha=$('conta-pass').value;
-  const nome_time=$('conta-time').value.trim();
+  const usuario=$('r-user').value.trim(), senha=$('r-pass').value;
+  const nome_time=$('r-time').value.trim();
   if(!usuario||!senha){toast('Preencha usuário e senha');return}
   load(true);
-  try{await api('conta_registrar','POST',{usuario,senha,nome_time});toast('Conta criada!');await contaStatus();}
-  catch(e){toast(e.message)}
+  try{
+    await api('conta_registrar','POST',{usuario,senha,nome_time});
+    toast('Conta criada! Bem-vindo, @'+usuario+'!');
+    await contaStatus();
+    fecharContaModal();
+  }catch(e){toast(e.message)}
   load(false);
 }
 async function contaLogin(){
-  const usuario=$('conta-user').value.trim(), senha=$('conta-pass').value;
+  const usuario=$('c-user').value.trim(), senha=$('c-pass').value;
   if(!usuario||!senha){toast('Preencha usuário e senha');return}
   load(true);
-  try{await api('conta_login','POST',{usuario,senha});toast('Login feito!');await contaStatus();}
-  catch(e){toast(e.message)}
+  try{
+    await api('conta_login','POST',{usuario,senha});
+    toast('Bem-vindo de volta, @'+usuario+'!');
+    await contaStatus();
+    fecharContaModal();
+  }catch(e){toast(e.message)}
   load(false);
 }
 async function contaLogout(){
   load(true);
-  try{await api('conta_logout','POST',{});S.conta=null;$('conta-status').textContent='Não logado';toast('Saiu da conta');}
-  catch(e){toast(e.message)}
+  try{
+    await api('conta_logout','POST',{});
+    S.conta=null;
+    atualizarUIconta();
+    fecharContaModal();
+    toast('Saiu da conta.');
+  }catch(e){toast(e.message)}
   load(false);
 }
 async function contaSalvarTime(){
-  const nome_time=$('conta-time').value.trim();
+  const nome_time=$('c-nome-time').value.trim();
   S.nomeTimeCustom=nome_time;
-  if(!S.conta){toast('Nome local salvo (sem conta).');return}
+  if(!S.conta){toast('Salvo localmente.');fecharContaModal();return}
   load(true);
-  try{await api('conta_nome_time','POST',{nome_time});toast('Nome do time atualizado');await contaStatus();}
-  catch(e){toast(e.message)}
+  try{
+    await api('conta_nome_time','POST',{nome_time});
+    toast('Nome do time atualizado!');
+    await contaStatus();
+  }catch(e){toast(e.message)}
   load(false);
 }
+
+// ===== NOME DO TIME (antes da Copa) =====
+function pedirNomeTime(){
+  if(preenchidos()!==11){toast('Complete o XI primeiro!');return}
+  const nomeAtual=(S.conta&&S.conta.nome_time&&S.conta.nome_time!=='Meu Time')?S.conta.nome_time:S.nomeTimeCustom;
+  $('nome-time-input').value=nomeAtual||'';
+  $('modal-nome').classList.add('show');
+  setTimeout(()=>$('nome-time-input').focus(),300);
+}
+function fecharNomeModal(){$('modal-nome').classList.remove('show')}
+function confirmarNomeTime(){
+  const n=$('nome-time-input').value.trim();
+  if(n)S.nomeTimeCustom=n;
+  fecharNomeModal();
+  iniciarCopa();
+}
+
 async function carregarHistoricoConta(){
-  if(!S.conta){$('conta-resumo').textContent='Faça login para ver seu histórico.';$('conta-vitorias').textContent='—';return}
+  if(!S.conta){
+    $('conta-nao-logado').style.display='block';
+    $('conta-logado-area').style.display='none';
+    return;
+  }
+  $('conta-nao-logado').style.display='none';
+  $('conta-logado-area').style.display='block';
+  $('conta-nome-exib').textContent='@'+S.conta.usuario;
   load(true);
   try{
     const d=await api('conta_historico');
-    $('conta-resumo').innerHTML=`Tentativas: <b>${d.stats.tentativas||0}</b> · Vitórias: <b>${d.stats.vitorias||0}</b> · Derrotas: <b>${d.stats.derrotas||0}</b>`;
-    if(!d.vitorias.length){$('conta-vitorias').innerHTML='<div class="center" style="color:var(--txt2)">Sem títulos ainda.</div>';}
-    else{
-      $('conta-vitorias').innerHTML=d.vitorias.map(v=>{
-        const esca=(v.escalacao||[]).map(j=>`${esc(j.posicao)} ${esc(j.nome)}`).join(' • ');
-        return `<div class="el-i" style="display:block"><div><b>${esc(v.time_nome)}</b> · ${v.pontos} pts · OVR ${v.ovr}</div><div class="el-meta">${esc(v.criado_em||'')}</div><div class="el-meta">${esca||'Escalação não disponível'}</div></div>`;
+    const s=d.stats;
+    const taxa=s.tentativas>0?Math.round((s.vitorias/s.tentativas)*100):0;
+    $('conta-stats-grid').innerHTML=`
+      <div class="stat-box"><div class="stat-n">${s.tentativas||0}</div><div class="stat-l">Partidas</div></div>
+      <div class="stat-box"><div class="stat-n" style="color:var(--amarelo)">${s.vitorias||0}</div><div class="stat-l">Títulos 🏆</div></div>
+      <div class="stat-box"><div class="stat-n" style="color:var(--txt2)">${taxa}%</div><div class="stat-l">Taxa vitória</div></div>
+    `;
+    const partidas=d.partidas||[];
+    if(!partidas.length){
+      $('conta-partidas').innerHTML='<div class="center" style="color:var(--c5);padding:20px">Nenhuma partida ainda. Comece a jogar!</div>';
+    }else{
+      $('conta-partidas').innerHTML=partidas.map(p=>{
+        const icon=p.campeao?'🏆':'❌';
+        const esca=(p.escalacao||[]).map(j=>esc(j.nome)).join(' · ');
+        const data=p.criado_em?p.criado_em.slice(0,10):'';
+        return `<div class="partida-item">
+          <div class="partida-head">
+            <span class="partida-badge">${icon}</span>
+            <div class="partida-info">
+              <div class="partida-time">${esc(p.time_nome||'Meu Time')}</div>
+              <div class="partida-meta">${esc(p.msg||'')} · OVR ${p.ovr} · ${data}</div>
+            </div>
+            <span class="partida-pts ${p.campeao?'':'derrota'}">${p.pontos}</span>
+          </div>
+          ${esca?`<div class="partida-esc">${esca}</div>`:''}
+        </div>`;
       }).join('');
     }
-  }catch(e){$('conta-resumo').textContent='Erro ao carregar histórico'}
+  }catch(e){toast('Erro ao carregar histórico')}
   load(false);
 }
 async function salvarPartidaConta(){
@@ -1258,31 +1504,6 @@ function listarMeuXI(elId){
 function abrirMeuXI(){listarMeuXI('xi-list');$('modal-xi').classList.add('show');}
 function fecharMeuXI(){$('modal-xi').classList.remove('show');}
 
-// ===== RANKING =====
-function abrirModal(){$('modal').classList.add('show');setTimeout(()=>$('modal-in').focus(),300)}
-function fecharModal(){$('modal').classList.remove('show')}
-async function confirmarRanking(){
-  const nome=$('modal-in').value.trim();
-  if(!nome){toast('Digite seu nome!');return}
-  fecharModal();load(true);
-  try{
-    const est=Object.values(S.xi).reduce((a,b)=>b.rating>a.rating?b:a);
-    const pontos=(S.resultadoCopa?S.resultadoCopa.pontos:0)||C.meu.ovr;
-    await api('salvar_ranking','POST',{usuario:nome,pontos,time_id:est.time_id,decada:est.decada});
-    toast('✅ Salvo no ranking!');
-  }catch(e){toast('Erro ao salvar: '+e.message)}
-  load(false);
-}
-async function irRanking(){
-  tela('ranking');load(true);
-  try{
-    const d=await api('ranking');
-    const el=$('rk-list');
-    if(!d.length)el.innerHTML='<div class="center" style="color:var(--c5);padding:30px">Nenhum resultado ainda. Seja o primeiro!</div>';
-    else el.innerHTML=d.map((r,i)=>`<div class="rk-i"><span class="rk-p">${i+1}</span><div class="rk-info"><div class="rk-u">${esc(r.usuario)}</div><div class="rk-s">Time destaque: ${esc(r.time_nome)}${r.decada_sorteada?(' · '+labelEra(r.decada_sorteada)):''}</div></div><span class="rk-pts">${r.pontos}</span></div>`).join('');
-  }catch(e){toast('Erro: '+e.message);$('rk-list').innerHTML='<div class="center" style="color:var(--c5);padding:30px">Erro ao carregar</div>'}
-  load(false);
-}
 contaStatus();
 </script>
 </body>
