@@ -30,6 +30,36 @@
   --glass:rgba(9,20,32,.9);
   --glass-b:rgba(255,255,255,.06);
 }
+/* ── MODO CLARO ── */
+.light{
+  --bg:#F0F4F8;
+  --c1:#FFFFFF;
+  --c2:#F5F7FA;
+  --c3:#E4EAF2;
+  --c4:#C8D4E4;
+  --c5:#94A8C0;
+  --txt:#1A2640;
+  --txt2:#4A6080;
+  --txt3:#8AA0BC;
+  --shadow:0 4px 24px rgba(0,0,0,.10);
+  --glass:rgba(255,255,255,.92);
+  --glass-b:rgba(0,0,0,.08);
+  --verde-dim:#d0f5e3;
+}
+.light body::before{display:none}
+.light .header{background:rgba(240,244,248,.95);border-bottom:1px solid rgba(0,0,0,.08)}
+.light .btn-top{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:#4A6080}
+.light .btn-top.logado-btn{border-color:rgba(150,100,20,.4);color:#8a6010}
+.light #hdr-rank-badge{background:rgba(150,100,20,.1);border-color:rgba(150,100,20,.3);color:#8a6010}
+.light .campo-bg{background:linear-gradient(180deg,#2d7a3a 0%,#3a9e4a 50%,#2d7a3a 100%)}
+.light .sheet{background:linear-gradient(180deg,#ffffff,#f5f7fa)}
+.light .jitem{background:linear-gradient(120deg,#f8fafc,#f0f4f8);border-color:rgba(0,0,0,.08)}
+.light .jitem:hover{background:#e8eef8;border-color:rgba(0,100,200,.2)}
+.light .roleta-box{background:linear-gradient(160deg,#fff 0%,#f5f7fa 50%,#fff 100%)}
+.light .rw-window{background:#e4eaf2;border-color:rgba(0,0,0,.1)}
+.light .rw-cell{color:#1a2640}
+.light .slot{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.15)}
+.light .slot.filled{background:radial-gradient(circle at 40% 30%,#2d5a1a,#1a3a10)}
 html{font-size:16px;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;overflow-x:hidden;line-height:1.5}
 body::before{
@@ -869,6 +899,7 @@ body::before{
       <button class="btn-top hdr-nav" id="hdr-home" onclick="irHome()" style="display:none">Início</button>
       <button class="btn-top hdr-nav" id="hdr-ranking" onclick="irRanking()" style="display:none">🏅 Ranking</button>
       <div id="hdr-rank-badge" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.25);border-radius:20px;padding:5px 10px;white-space:nowrap"></div>
+      <button class="btn-top" id="btn-tema" onclick="toggleTema()" title="Alternar modo claro/escuro">🌙</button>
       <button class="btn-top logado-btn" id="btn-conta-hdr" onclick="abrirContaModal()">👤 Entrar</button>
     </div>
   </div>
@@ -1513,6 +1544,17 @@ function mudarFormacao(key){
 }
 function mudarTatica(v){S.tatica=v;}
 function irHome(){tela('home')}
+function toggleTema(){
+  const light=document.documentElement.classList.toggle('light');
+  localStorage.setItem('tema',light?'light':'dark');
+  $('btn-tema').textContent=light?'🌑':'🌙';
+}
+(function(){
+  if(localStorage.getItem('tema')==='light'){
+    document.documentElement.classList.add('light');
+    document.addEventListener('DOMContentLoaded',()=>{const b=$('btn-tema');if(b)b.textContent='🌑';});
+  }
+})();
 function irConta(){
   tela('conta');
   if(S.conta){
@@ -1581,8 +1623,10 @@ async function comecarDraft(){
     }catch(e){toast('Erro ao carregar: '+e.message);load(false);return}
     load(false);
   }
-  S.xi={};S.comboAtual=null;S.jogadorSel=null;S.resultado=null;
+  S.xi={};S.comboAtual=null;S.jogadorSel=null;S.resultado=null;S.gameToken=null;
   S.rerollUsados=0;S.girouNestaRodada=false;S.rolando=false;S.formacaoBloqueada=false;
+  // solicitar token de partida se logado
+  if(S.conta){ api('iniciar_partida','POST',{}).then(d=>{ S.gameToken=d.token||null; }).catch(()=>{}); }
   document.querySelectorAll('.form-btn').forEach(b=>b.classList.remove('bloqueado-form'));
   const difMap={facil:3,normal:2,dificil:0};
   const baseReroll=(S.modo==='memoria')?1:2;
@@ -3127,7 +3171,8 @@ async function salvarPartidaContaComConquistas(){
       ovr: S.resultadoCopa.ovr||0,
       msg: S.resultadoCopa.msg||'',
       time_nome: C.meu&&C.meu.nome?C.meu.nome:'Meu Time',
-      escalacao
+      escalacao,
+      game_token: S.gameToken||''
     });
     if(r.pontos_ganhos > 0){
       mostrarPtsGanhos(r.pontos_ganhos, r.liga?.nome||'');

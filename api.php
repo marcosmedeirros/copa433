@@ -1,7 +1,13 @@
 <?php
 session_start();
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+$allowedOrigins = ['https://copa433.site', 'https://www.copa433.site', 'http://localhost', 'http://127.0.0.1'];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+} else {
+    header('Access-Control-Allow-Origin: https://copa433.site');
+}
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
@@ -74,6 +80,17 @@ function garantirTabelasConta(PDO $pdo): void {
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_usuario (usuario_id),
             CONSTRAINT fk_partidas_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS game_tokens (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            token CHAR(64) NOT NULL UNIQUE,
+            usado TINYINT(1) NOT NULL DEFAULT 0,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_gt_token (token),
+            INDEX idx_gt_usuario (usuario_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
     $pdo->exec("
@@ -310,6 +327,25 @@ switch ($action) {
         echo json_encode(['usuario' => $u, 'stats' => $s, 'partidas' => $partidas]);
         break;
 
+    case 'iniciar_partida':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro' => 'Nao autenticado']); break; }
+        // rate limit: max 30 partidas iniciadas nos últimos 60 min
+        $rl = $pdo->prepare("SELECT COUNT(*) c FROM game_tokens WHERE usuario_id=? AND criado_em > DATE_SUB(NOW(), INTERVAL 60 MINUTE)");
+        $rl->execute([intval($u['id'])]);
+        if (intval($rl->fetch()['c']) >= 30) {
+            http_response_code(429);
+            echo json_encode(['erro' => 'Muitas partidas em sequência. Aguarde alguns minutos.']);
+            break;
+        }
+        // limpa tokens velhos do usuário (> 3h)
+        $pdo->prepare("DELETE FROM game_tokens WHERE usuario_id=? AND criado_em < DATE_SUB(NOW(), INTERVAL 3 HOUR)")->execute([intval($u['id'])]);
+        $tok = bin2hex(random_bytes(32));
+        $pdo->prepare("INSERT INTO game_tokens (usuario_id, token) VALUES (?, ?)")->execute([intval($u['id']), $tok]);
+        echo json_encode(['token' => $tok]);
+        break;
+
     case 'salvar_partida':
         if (!iniciarModuloConta($pdo)) break;
         $u = usuarioLogado($pdo);
@@ -319,10 +355,38 @@ switch ($action) {
             break;
         }
         $body = json_decode(file_get_contents('php://input'), true);
+
+        // validar token de partida
+        $gameTok = trim((string)($body['game_token'] ?? ''));
+        if ($gameTok !== '') {
+            $gtSt = $pdo->prepare("SELECT id, usado FROM game_tokens WHERE token=? AND usuario_id=? AND criado_em > DATE_SUB(NOW(), INTERVAL 3 HOUR)");
+            $gtSt->execute([$gameTok, intval($u['id'])]);
+            $gt = $gtSt->fetch();
+            if (!$gt) {
+                http_response_code(403);
+                echo json_encode(['erro' => 'Token de partida inválido ou expirado']);
+                break;
+            }
+            if ($gt['usado']) {
+                http_response_code(403);
+                echo json_encode(['erro' => 'Resultado já registrado']);
+                break;
+            }
+            $pdo->prepare("UPDATE game_tokens SET usado=1 WHERE id=?")->execute([$gt['id']]);
+        }
+
+        // validar valores dentro de ranges razoáveis
         $campeao = !empty($body['campeao']) ? 1 : 0;
-        $pontos = intval($body['pontos'] ?? 0);
-        $ovr = intval($body['ovr'] ?? 0);
+        $pontos = max(0, min(300, intval($body['pontos'] ?? 0)));
+        $ovr = max(50, min(99, intval($body['ovr'] ?? 0)));
         $msg = substr(trim((string)($body['msg'] ?? '')), 0, 255);
+        $msgValidas = ['Campeão', 'Final', 'Semifinal', 'Quartas de Final', 'Fase de Grupos'];
+        $msgOk = $msg === '' || array_reduce($msgValidas, fn($c, $v) => $c || str_contains($msg, $v), false);
+        if (!$msgOk) $msg = 'Fase de Grupos';
+        // campeão só pode ter pontos >= 100
+        if ($campeao && $pontos < 100) $pontos = 100;
+        if (!$campeao && $pontos >= 200) $pontos = 60;
+
         $timeNome = substr(trim((string)($body['time_nome'] ?? ($u['nome_time'] ?? 'Meu Time'))), 0, 80);
         $escalacao = json_encode(($body['escalacao'] ?? []), JSON_UNESCAPED_UNICODE);
         $st = $pdo->prepare("
