@@ -436,6 +436,65 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .rodape a{color:var(--verde);text-decoration:none;font-weight:600;opacity:.7}
 .rodape a:hover{opacity:1}
 .rodape .sep{color:var(--c4);margin:0 6px}
+
+/* ── Ligas ── */
+.liga-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:4px 12px;border-radius:20px}
+.liga-bronze  {background:rgba(205,127,50,.15);color:#cd7f32;border:1px solid rgba(205,127,50,.4)}
+.liga-prata   {background:rgba(192,192,192,.12);color:#c0c0c0;border:1px solid rgba(192,192,192,.35)}
+.liga-ouro    {background:rgba(255,214,0,.13);color:var(--amarelo);border:1px solid rgba(255,214,0,.35)}
+.liga-platina {background:rgba(80,200,255,.12);color:#7dd8ff;border:1px solid rgba(80,200,255,.3)}
+.liga-diamante{background:rgba(130,80,255,.15);color:#b06aff;border:1px solid rgba(130,80,255,.35)}
+.liga-elite   {background:linear-gradient(90deg,rgba(255,214,0,.15),rgba(255,100,0,.15));color:#ffb020;border:1px solid rgba(255,180,0,.5)}
+.pts-gain{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--verde);animation:ptsPop .6s cubic-bezier(.16,1,.3,1) both}
+@keyframes ptsPop{from{opacity:0;transform:translateY(-12px) scale(.8)}to{opacity:1;transform:none}}
+
+/* ── Conquistas ── */
+.conquistas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px;margin-bottom:16px}
+.cq-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 6px;border-radius:12px;background:var(--c2);border:1.5px solid var(--c3);text-align:center;transition:.2s;cursor:default}
+.cq-item.desbloqueada{border-color:var(--amarelo);background:linear-gradient(135deg,rgba(255,214,0,.08),rgba(255,140,0,.06))}
+.cq-item.bloqueada{opacity:.38;filter:grayscale(1)}
+.cq-icon{font-size:26px;line-height:1}
+.cq-nome{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;color:var(--txt2);letter-spacing:.5px;line-height:1.2}
+.cq-item.desbloqueada .cq-nome{color:var(--txt)}
+.cq-pts{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--amarelo)}
+.cq-item.bloqueada .cq-pts{display:none}
+/* Raridade */
+.cq-item[data-raridade="lendario"]{border-color:rgba(255,80,80,.5)}
+.cq-item.desbloqueada[data-raridade="lendario"]{background:linear-gradient(135deg,rgba(255,80,80,.1),rgba(180,0,0,.08));border-color:rgba(255,80,80,.7)}
+.cq-item[data-raridade="epico"]{border-color:rgba(130,80,255,.4)}
+.cq-item.desbloqueada[data-raridade="epico"]{background:linear-gradient(135deg,rgba(130,80,255,.1),rgba(80,0,200,.07));border-color:rgba(160,100,255,.7)}
+
+/* ── Pop-up conquista ── */
+.cq-popup{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--c1);border:1.5px solid var(--amarelo);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:12px;z-index:500;opacity:0;pointer-events:none;transition:.35s;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.cq-popup.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all}
+.cq-popup-icon{font-size:32px;flex-shrink:0}
+.cq-popup-info{}
+.cq-popup-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--amarelo);text-transform:uppercase}
+.cq-popup-nome{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--txt)}
+.cq-popup-desc{font-size:12px;color:var(--txt2);margin-top:2px;line-height:1.4}
+
+/* ── Duelos ── */
+.duelo-box{background:var(--c1);border-radius:var(--radius);padding:16px;border:1px solid var(--c3);margin-bottom:12px}
+.duelo-box-t{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt2);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.duelo-box-t::before,.duelo-box-t::after{content:'';flex:1;height:1px;background:var(--c3)}
+.duelo-vs{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:14px}
+.duelo-lado{flex:1;text-align:center}
+.duelo-lado-nome{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--txt)}
+.duelo-lado-time{font-size:12px;color:var(--txt2)}
+.duelo-lado-ovr{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--amarelo)}
+.duelo-x{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--txt2);flex-shrink:0}
+.duelo-placar{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--txt);text-align:center;letter-spacing:3px;line-height:1}
+.duelo-placar .win{color:var(--verde)}
+.duelo-placar .lose{color:#ff5252}
+.duelo-code{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:6px;color:var(--verde);text-align:center;background:var(--c3);border-radius:10px;padding:10px 0;margin:8px 0}
+.duelo-code-hint{text-align:center;font-size:12px;color:var(--txt2);margin-bottom:12px}
+.duelo-historico{display:flex;flex-direction:column;gap:6px}
+.dh-item{display:flex;align-items:center;gap:8px;background:var(--c2);border-radius:8px;padding:8px 12px;font-family:'Barlow Condensed',sans-serif;font-size:13px}
+.dh-code{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--txt2);min-width:52px}
+.dh-names{flex:1;color:var(--txt2)}
+.dh-score{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--txt)}
+.dh-status{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--c3);color:var(--txt2)}
+.dh-status.aguardando{color:var(--amarelo);background:rgba(255,214,0,.1)}
 </style>
 </head>
 <body>
@@ -542,8 +601,38 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div id="conta-logado-area" style="display:none">
     <div class="grupo-box">
       <div class="grupo-t">Resumo · <span id="conta-nome-exib" style="color:var(--verde)"></span></div>
+      <!-- Liga + Pontos -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <div id="perfil-liga-badge" class="liga-badge liga-bronze">🥉 Bronze</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--amarelo)" id="perfil-pts">0 pts</div>
+        <div style="flex:1;background:var(--c3);border-radius:100px;height:5px;overflow:hidden;min-width:60px">
+          <div id="perfil-liga-bar" style="height:100%;background:linear-gradient(90deg,var(--verde),var(--amarelo));width:0;transition:width .8s"></div>
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--txt2)" id="perfil-prox-liga">—</div>
+      </div>
       <div class="stats-grid" id="conta-stats-grid"></div>
     </div>
+
+    <!-- Conquistas -->
+    <div>
+      <div class="camp-section-t">Conquistas</div>
+      <div class="conquistas-grid" id="conquistas-grid">
+        <div class="center" style="color:var(--c5);padding:20px;grid-column:1/-1">Carregando...</div>
+      </div>
+    </div>
+
+    <!-- Duelos -->
+    <div>
+      <div class="camp-section-t">Duelos</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="btn btn-amarelo btn-sm" onclick="abrirCriarDuelo()" style="flex:1">⚔️ Criar duelo</button>
+        <button class="btn btn-secondary btn-sm" onclick="abrirEntrarDuelo()" style="flex:1">🔗 Entrar com código</button>
+      </div>
+      <div id="duelos-historico" class="duelo-historico">
+        <div class="center" style="color:var(--c5);padding:12px">Sem duelos ainda.</div>
+      </div>
+    </div>
+
     <div>
       <div class="camp-section-t">Últimas partidas</div>
       <div id="conta-partidas"><div class="center" style="color:var(--c5);padding:20px">Nenhuma partida ainda.</div></div>
@@ -812,6 +901,62 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 </div>
 
+<!-- Modal: criar duelo -->
+<div class="modal" id="modal-criar-duelo" onclick="if(event.target===this)$('modal-criar-duelo').classList.remove('show')">
+  <div class="sheet">
+    <div class="sheet-t">⚔️ Criar Duelo</div>
+    <div class="sheet-d">Monte seu XI normalmente e depois crie o duelo. Um código será gerado para seu adversário entrar.</div>
+    <div id="criar-duelo-body">
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.6">
+        Você precisa ter o XI completo para criar um duelo.<br>
+        <span id="criar-duelo-status" style="color:var(--verde)"></span>
+      </div>
+    </div>
+    <div class="sheet-a">
+      <button class="btn btn-secondary btn-sm" onclick="$('modal-criar-duelo').classList.remove('show')">Cancelar</button>
+      <button class="btn btn-amarelo btn-sm" id="btn-confirmar-duelo" onclick="confirmarCriarDuelo()">Gerar código ⚔️</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: entrar em duelo -->
+<div class="modal" id="modal-entrar-duelo" onclick="if(event.target===this)$('modal-entrar-duelo').classList.remove('show')">
+  <div class="sheet">
+    <div class="sheet-t">🔗 Entrar no Duelo</div>
+    <div class="sheet-d">Digite o código de 6 caracteres que seu adversário enviou.</div>
+    <input class="sheet-in" id="duelo-codigo-input" type="text" placeholder="Ex: AB3CDE" maxlength="6"
+      style="text-transform:uppercase;letter-spacing:4px;font-size:24px;text-align:center"
+      oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')confirmarEntrarDuelo()">
+    <div class="sheet-a" style="margin-top:12px">
+      <button class="btn btn-secondary btn-sm" onclick="$('modal-entrar-duelo').classList.remove('show')">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmarEntrarDuelo()">Entrar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: resultado do duelo -->
+<div class="modal" id="modal-resultado-duelo" onclick="if(event.target===this)$('modal-resultado-duelo').classList.remove('show')">
+  <div class="sheet">
+    <div class="sheet-t" id="duelo-res-titulo">Resultado do Duelo</div>
+    <div class="duelo-box" id="duelo-res-box" style="margin-top:4px"></div>
+    <div id="duelo-res-pts" style="text-align:center;margin-bottom:12px"></div>
+    <div class="sheet-a">
+      <button class="btn btn-secondary btn-sm" onclick="$('modal-resultado-duelo').classList.remove('show')">Fechar</button>
+      <button class="btn btn-amarelo btn-sm" onclick="compartilharDuelo()">📤 Compartilhar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pop-up: conquista desbloqueada -->
+<div class="cq-popup" id="cq-popup">
+  <div class="cq-popup-icon" id="cq-popup-icon">🏆</div>
+  <div class="cq-popup-info">
+    <div class="cq-popup-label">Conquista desbloqueada!</div>
+    <div class="cq-popup-nome" id="cq-popup-nome">—</div>
+    <div class="cq-popup-desc" id="cq-popup-desc">—</div>
+  </div>
+</div>
+
 <script>
 const API='api.php';
 
@@ -960,6 +1105,7 @@ async function irRanking(){
       const pos=medals[i]||(i+1);
       const escudo=r.escudo?`<img src="${r.escudo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`:
         `<div style="width:36px;height:36px;border-radius:50%;background:var(--c3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚽</div>`;
+      const ligaR = ligaDosPts(intval(r.pontos||0));
       const nomeTime=r.nome_time&&r.nome_time!=='Meu Time'?r.nome_time:'';
       return `<div class="rk-i">
         <div class="rk-p" style="min-width:32px;text-align:center">${pos}</div>
@@ -2129,6 +2275,7 @@ function confirmarNomeTime(){
 }
 
 async function carregarHistoricoConta(){
+  carregarPerfilCompleto();
   if(!S.conta){
     $('conta-nao-logado').style.display='block';
     $('conta-logado-area').style.display='none';
@@ -2197,6 +2344,9 @@ function renderStreakBanner(campeao){
 }
 
 async function salvarPartidaConta(){
+  return salvarPartidaContaComConquistas();
+}
+async function _salvarPartidaContaOLD(){
   if(!S.conta||!S.resultadoCopa)return;
   const escalacao=Object.values(S.xi).map(j=>({nome:j.nome,posicao:j.posicao,rating:j.rating,sigla:j.sigla}));
   try{
@@ -2222,6 +2372,368 @@ function listarMeuXI(elId){
 }
 function abrirMeuXI(){listarMeuXI('xi-list');$('modal-xi').classList.add('show');}
 function fecharMeuXI(){$('modal-xi').classList.remove('show');}
+
+
+// ================================================================
+// DADOS: Definição das conquistas (espelho do PHP)
+// ================================================================
+const CONQUISTAS_DEF = {
+  primeiro_titulo:   {nome:'Primeiro Título',   icone:'🏆', desc:'Ganhe a Copa433 pela primeira vez.',             pontos:20,  raridade:'comum'},
+  rei_brasil:        {nome:'Rei do Brasil',      icone:'🇧🇷', desc:'Campeão com time 100% brasileiro.',              pontos:30,  raridade:'raro'},
+  underdog:          {nome:'Underdog',           icone:'🐶', desc:'Ganhe com OVR médio ≤83.',                       pontos:50,  raridade:'epico'},
+  lendario:          {nome:'Lendário',           icone:'⚡', desc:'Ganhe com OVR médio ≤78.',                       pontos:100, raridade:'lendario'},
+  lenda_viva:        {nome:'Lenda Viva',         icone:'👑', desc:'Escale Pelé como atacante.',                     pontos:20,  raridade:'comum'},
+  los_galacticos:    {nome:'Los Galácticos',     icone:'⭐', desc:'Messi + Cristiano Ronaldo + Neymar no mesmo XI.',pontos:75,  raridade:'epico'},
+  trio_brasileiro:   {nome:'Trio Ouro Verde',    icone:'🟢', desc:'Pelé + Ronaldo (Brasil) + Neymar no mesmo XI.',  pontos:60,  raridade:'raro'},
+  invicto:           {nome:'Invicto',            icone:'🛡️', desc:'Campeão sem nenhuma derrota ou empate.',         pontos:60,  raridade:'epico'},
+  sem_sofrer:        {nome:'Muralha Absoluta',   icone:'🧱', desc:'Campeão sem sofrer nenhum gol.',                pontos:80,  raridade:'lendario'},
+  muralha:           {nome:'Sólido',             icone:'🔒', desc:'Campeão sofrendo ≤3 gols no torneio.',           pontos:40,  raridade:'raro'},
+  goleador:          {nome:'Artilheiro',         icone:'⚽', desc:'Marque 20+ gols em um torneio.',                pontos:30,  raridade:'comum'},
+  virada_penaltis:   {nome:'Drama Puro',         icone:'🎭', desc:'Classifique-se em pênaltis.',                   pontos:25,  raridade:'comum'},
+  campeao_defensivo: {nome:'Mourinho Mode',      icone:'🧱', desc:'Campeão com mentalidade Defensiva.',             pontos:35,  raridade:'raro'},
+  campeao_ofensivo:  {nome:'Jogo Bonito',        icone:'🎨', desc:'Campeão com mentalidade Ofensiva.',             pontos:35,  raridade:'raro'},
+  goleada_historica: {nome:'Goleada Histórica',  icone:'💥', desc:'Vença por 5+ gols de diferença.',               pontos:30,  raridade:'comum'},
+  equilibrista:      {nome:'Diversidade',        icone:'🌍', desc:'Campeão com jogadores de 5+ eras diferentes.',  pontos:45,  raridade:'raro'},
+  hat_trick_titulos: {nome:'Hat-trick',          icone:'🎩', desc:'Ganhe a Copa433 3 vezes.',                      pontos:75,  raridade:'epico'},
+  veterano:          {nome:'Veterano',           icone:'📅', desc:'Jogue 10 partidas.',                            pontos:25,  raridade:'comum'},
+  duelo_vitorioso:   {nome:'Caça-Duelos',        icone:'⚔️', desc:'Vença seu primeiro duelo multiplayer.',         pontos:40,  raridade:'raro'},
+  campeao_diario:    {nome:'Rei do Dia',         icone:'📅', desc:'Seja campeão no Desafio Diário.',               pontos:50,  raridade:'epico'},
+};
+
+const LIGAS_DEF = [
+  {id:'elite',    nome:'Copa433 Elite', icone:'👑', min:25000, next:null},
+  {id:'diamante', nome:'Diamante',      icone:'💠', min:10000, next:25000},
+  {id:'platina',  nome:'Platina',       icone:'💎', min:4000,  next:10000},
+  {id:'ouro',     nome:'Ouro',          icone:'🥇', min:1500,  next:4000},
+  {id:'prata',    nome:'Prata',         icone:'🥈', min:500,   next:1500},
+  {id:'bronze',   nome:'Bronze',        icone:'🥉', min:0,     next:500},
+];
+
+function ligaDosPts(pts){
+  for(const l of LIGAS_DEF) if(pts>=l.min) return l;
+  return LIGAS_DEF[LIGAS_DEF.length-1];
+}
+
+// ================================================================
+// LIGAS: badge de pontos ganhos + atualização do perfil
+// ================================================================
+let _totalPtsLocal = 0;
+
+function mostrarPtsGanhos(qtd, motivo){
+  if(!qtd) return;
+  const el = document.createElement('div');
+  el.className = 'pts-gain';
+  el.style.cssText = 'position:fixed;top:70px;right:16px;z-index:600;background:var(--c2);border:1px solid var(--verde);border-radius:10px;padding:8px 14px;font-size:14px;box-shadow:0 4px 20px rgba(0,0,0,.4)';
+  el.textContent = `+${qtd} pts${motivo?' · '+motivo:''}`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 2400);
+}
+
+function renderLigaBadge(el, pts){
+  if(!el) return;
+  const l = ligaDosPts(pts);
+  el.className = 'liga-badge liga-'+l.id;
+  el.textContent = l.icone+' '+l.nome;
+}
+
+// ================================================================
+// CONQUISTAS: pop-up + grid no perfil
+// ================================================================
+let _conquistas_desbloqueadas = [];
+
+function mostrarPopupConquista(id){
+  const def = CONQUISTAS_DEF[id]; if(!def) return;
+  const p = $('cq-popup');
+  if(!p) return;
+  $('cq-popup-icon').textContent = def.icone;
+  $('cq-popup-nome').textContent = def.nome;
+  $('cq-popup-desc').textContent = def.desc+' (+'+def.pontos+' pts)';
+  p.classList.add('show');
+  clearTimeout(p._t);
+  p._t = setTimeout(()=>p.classList.remove('show'), 4000);
+}
+
+async function verificarConquistasAposPartida(ctx){
+  if(!S.conta) return;
+  try{
+    const r = await api('verificar_conquistas','POST',{ctx});
+    if(r.novas && r.novas.length){
+      _conquistas_desbloqueadas.push(...r.novas);
+      // Mostrar pop-ups em sequência
+      r.novas.forEach((id,i)=>setTimeout(()=>mostrarPopupConquista(id), i*1800));
+    }
+    if(r.pontos_ganhos > 0) mostrarPtsGanhos(r.pontos_ganhos, 'Conquistas');
+  }catch(e){}
+}
+
+function renderConquistasGrid(desbloqueadas){
+  const grid = $('conquistas-grid');
+  if(!grid) return;
+  const ids = desbloqueadas.map(c=>c.conquista_id||c);
+  grid.innerHTML = Object.entries(CONQUISTAS_DEF).map(([id, def])=>{
+    const ok = ids.includes(id);
+    return `<div class="cq-item ${ok?'desbloqueada':'bloqueada'}" data-raridade="${def.raridade}" title="${def.desc}">
+      <div class="cq-icon">${def.icone}</div>
+      <div class="cq-nome">${def.nome}</div>
+      ${ok?`<div class="cq-pts">+${def.pontos}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ================================================================
+// DUELOS: criar, entrar, resolver
+// ================================================================
+let _dueloPendente = null; // código do duelo criado aguardando adversário
+
+function abrirCriarDuelo(){
+  const completo = Object.keys(S.xi).length === 11;
+  $('criar-duelo-status').textContent = completo ? '✅ XI completo — pronto para criar!' : '⚠️ Você precisa completar o XI antes.';
+  $('btn-confirmar-duelo').disabled = !completo;
+  $('modal-criar-duelo').classList.add('show');
+}
+
+async function confirmarCriarDuelo(){
+  if(Object.keys(S.xi).length !== 11){ toast('Complete o XI primeiro!'); return; }
+  if(!S.conta){ toast('Você precisa estar logado para criar duelos.'); return; }
+  load(true);
+  try{
+    const escalacao = Object.values(S.xi).map(j=>({nome:j.nome,posicao:j.posicao,rating:j.rating,sigla:j.sigla||'',decada:j.decada||''}));
+    const ovr = meuOVR();
+    const r = await api('duelo_criar','POST',{
+      escalacao, ovr,
+      formacao: S.formacao||'433',
+      mentalidade: S.mentalidade||'equilibrado',
+      nome_time: S.conta?.nome_time || C.meu?.nome || 'Meu Time',
+    });
+    $('modal-criar-duelo').classList.remove('show');
+    _dueloPendente = r.codigo;
+    mostrarCodigoDuelo(r.codigo);
+  }catch(e){ toast('Erro: '+e.message); }
+  load(false);
+}
+
+function mostrarCodigoDuelo(codigo){
+  $('duelo-res-titulo').textContent = '⚔️ Duelo Criado!';
+  $('duelo-res-box').innerHTML = `
+    <div class="duelo-box-t">Seu código</div>
+    <div class="duelo-code">${codigo}</div>
+    <div class="duelo-code-hint">Envie esse código para seu adversário. Ele entra em "Duelos → Entrar com código", monta o XI e o duelo é resolvido automaticamente.</div>
+    <button class="btn btn-secondary btn-sm" style="width:100%" onclick="navigator.clipboard.writeText('${codigo}').then(()=>toast('Código copiado!'))">📋 Copiar código</button>
+  `;
+  $('duelo-res-pts').textContent = '';
+  $('modal-resultado-duelo').classList.add('show');
+}
+
+function abrirEntrarDuelo(){
+  $('duelo-codigo-input').value = '';
+  $('modal-entrar-duelo').classList.add('show');
+  setTimeout(()=>$('duelo-codigo-input').focus(), 300);
+}
+
+async function confirmarEntrarDuelo(){
+  const codigo = $('duelo-codigo-input').value.trim().toUpperCase();
+  if(codigo.length < 4){ toast('Código inválido'); return; }
+  if(!S.conta){ toast('Você precisa estar logado.'); return; }
+  load(true);
+  try{
+    const info = await api('duelo_entrar','POST',{codigo});
+    $('modal-entrar-duelo').classList.remove('show');
+    if(info.erro){ toast(info.erro); load(false); return; }
+    // Verificar se XI está completo
+    if(Object.keys(S.xi).length !== 11){
+      toast(`Adversário: ${info.adversario} (${info.adv_time} OVR ${info.adv_ovr}). Complete seu XI para resolver o duelo!`);
+      // Salvar código para resolver depois
+      S._dueloCodigo = codigo;
+      S._dueloInfo = info;
+      load(false);
+      return;
+    }
+    await resolverDuelo(codigo, info);
+  }catch(e){ toast('Erro: '+e.message); }
+  load(false);
+}
+
+async function resolverDuelo(codigo, info){
+  if(!S.conta){ toast('Você precisa estar logado.'); return; }
+  load(true);
+  try{
+    const escalacao = Object.values(S.xi).map(j=>({nome:j.nome,posicao:j.posicao,rating:j.rating,sigla:j.sigla||'',decada:j.decada||''}));
+    const ovr = meuOVR();
+    const r = await api('duelo_resolver','POST',{
+      codigo, escalacao, ovr,
+      formacao: S.formacao||'433',
+      mentalidade: S.mentalidade||'equilibrado',
+      nome_time: S.conta?.nome_time || 'Meu Time',
+    });
+    mostrarResultadoDuelo(r);
+    // Verificar conquista duelo_vitorioso
+    if(!r.empate){
+      const euGanhei = !r.criador_ganhou; // desafiante ganhou
+      if(euGanhei) verificarConquistasAposPartida({ganhou_duelo:true});
+    }
+    carregarHistoricoConta(); // atualiza histórico
+  }catch(e){ toast('Erro: '+e.message); }
+  load(false);
+}
+
+function mostrarResultadoDuelo(r){
+  const euGanhei = !r.criador_ganhou && !r.empate;
+  const criadorGanhou = r.criador_ganhou && !r.empate;
+  $('duelo-res-titulo').textContent = r.empate ? '⚖️ Empate!' : (euGanhei ? '🏆 Você venceu!' : '❌ Você perdeu');
+
+  const g1cls = r.g1 > r.g2 ? 'win' : (r.g1 < r.g2 ? 'lose' : '');
+  const g2cls = r.g2 > r.g1 ? 'win' : (r.g2 < r.g1 ? 'lose' : '');
+
+  $('duelo-res-box').innerHTML = `
+    <div class="duelo-vs">
+      <div class="duelo-lado">
+        <div class="duelo-lado-nome">${esc(r.criador_nome)}</div>
+        <div class="duelo-lado-time">${esc(r.criador_time)}</div>
+        <div class="duelo-lado-ovr">OVR ${r.criador_ovr}</div>
+      </div>
+      <div class="duelo-x">VS</div>
+      <div class="duelo-lado">
+        <div class="duelo-lado-nome">${esc(r.desafiante_nome)}</div>
+        <div class="duelo-lado-time">${esc(r.desafiante_time)}</div>
+        <div class="duelo-lado-ovr">OVR ${r.desafiante_ovr||'—'}</div>
+      </div>
+    </div>
+    <div class="duelo-placar">
+      <span class="${g1cls}">${r.g1}</span><span style="color:var(--txt2)"> — </span><span class="${g2cls}">${r.g2}</span>
+      ${r.pen?`<div style="font-size:14px;color:var(--txt2);margin-top:4px">(${r.pen1}–${r.pen2} pênaltis)</div>`:''}
+    </div>
+  `;
+  const pts = r.empate ? 40 : (euGanhei ? 80 : 20);
+  $('duelo-res-pts').innerHTML = `<div style="text-align:center;margin-top:8px"><span class="liga-badge liga-ouro">+${pts} pts</span></div>`;
+  $('modal-resultado-duelo').classList.add('show');
+}
+
+function compartilharDuelo(){
+  if(!_dueloPendente) return;
+  const txt = `⚔️ Desafio Copa433! Entre com o código "${_dueloPendente}", monte seu XI histórico e me enfrente! copa433.site`;
+  if(navigator.share){ navigator.share({title:'Copa433',text:txt}).catch(()=>{}); }
+  else { navigator.clipboard.writeText(txt).then(()=>toast('Copiado!')); }
+}
+
+// ================================================================
+// PERFIL: carrega conquistas, pontos e duelos
+// ================================================================
+async function carregarPerfilCompleto(){
+  if(!S.conta) return;
+  try{
+    const p = await api('perfil');
+    _totalPtsLocal = p.pontos || 0;
+    const l = ligaDosPts(p.pontos||0);
+    renderLigaBadge($('perfil-liga-badge'), p.pontos||0);
+    $('perfil-pts').textContent = (p.pontos||0).toLocaleString()+' pts';
+    // Barra de progresso até próxima liga
+    const barEl = $('perfil-liga-bar');
+    const proxEl = $('perfil-prox-liga');
+    if(l.next){
+      const pct = Math.min(100,((p.pontos-l.min)/(l.next-l.min))*100);
+      if(barEl) barEl.style.width = pct+'%';
+      if(proxEl) proxEl.textContent = `${(l.next-(p.pontos||0)).toLocaleString()} pts p/ ${LIGAS_DEF.find(x=>x.min===l.next)?.nome||''}`;
+    } else {
+      if(barEl) barEl.style.width='100%';
+      if(proxEl) proxEl.textContent = '🏆 Liga máxima';
+    }
+    renderConquistasGrid(p.conquistas||[]);
+  }catch(e){}
+
+  // Duelos recentes
+  try{
+    const duelos = await api('duelos_recentes');
+    const hist = $('duelos-historico');
+    if(!hist) return;
+    if(!duelos.length){ hist.innerHTML='<div class="center" style="color:var(--c5);padding:12px">Sem duelos ainda.</div>'; return; }
+    hist.innerHTML = duelos.map(d=>{
+      const enc = d.status==='encerrado';
+      const placar = enc ? `${d.gols1}–${d.gols2}${d.pen1||d.pen2?` (${d.pen1}–${d.pen2}p)`:''}` : '—';
+      return `<div class="dh-item">
+        <span class="dh-code">${d.codigo}</span>
+        <span class="dh-names">${esc(d.criador_nome)} vs ${esc(d.desafiante_nome||'aguardando...')}</span>
+        <span class="dh-score">${placar}</span>
+        <span class="dh-status ${d.status}">${d.status==='aguardando'?'⏳ Aguardando':'✅'}</span>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+// ================================================================
+// INTEGRAÇÃO: chamar verificações após fim da Copa
+// ================================================================
+async function salvarPartidaContaComConquistas(){
+  if(!S.conta || !S.resultadoCopa) return;
+  const escalacao = Object.values(S.xi).map(j=>({nome:j.nome,posicao:j.posicao,rating:j.rating,sigla:j.sigla}));
+
+  // Montar contexto para conquistas
+  const nomes = escalacao.map(j=>j.nome.toLowerCase());
+  const temPele  = nomes.some(n=>n.includes('pelé')||n.includes('pele'));
+  const temMessi = nomes.some(n=>n.includes('messi'));
+  const temCR7   = nomes.some(n=>n.includes('ronaldo')&&!n.includes('ronaldo angelim')&&!n.includes('rodrigo')&&!n.includes('ronaldo luís'));
+  const temNeymar= nomes.some(n=>n.includes('neymar'));
+  const temRonaldoBrasil = nomes.some(n=>n.includes('ronaldo')&&!n.includes('ronaldo angelim'));
+  const siglas = Object.values(S.xi).map(j=>(j.sigla||'').toUpperCase());
+  const TIMES_BR = ['FLA','COR','SAO','SAN','GRE','INT','CRU','PAL','VAS','CAM','FLU','BOT','ATM'];
+  const timeBrasileiro = siglas.every(s=>TIMES_BR.includes(s));
+  const eras = [...new Set(Object.values(S.xi).map(j=>j.decada||''))].filter(Boolean);
+  const golsSofridosCopa = C.golsSofridos||0;
+  const golsMarcadosCopa = C.golsMarcados||0;
+  const jogosDaCopa = C.jogosCopa||0;
+  // Verificar pênaltis: se algum jogo do mata-mata foi pênaltis
+  const tevePenaltis = ['quartas','semis','final'].some(f=>(C.mata[f]||[]).some(j=>j.pen&&j.venc&&(j.home.eu||j.away.eu)));
+  // Maior goleada
+  let maiorGoleada = 0;
+  const todosJogos = [...(C.grupo||[]),...['quartas','semis','final'].flatMap(f=>C.mata[f]||[])];
+  todosJogos.filter(j=>j.done).forEach(j=>{
+    const saldo = Math.abs((j.g1||0)-(j.g2||0));
+    if(saldo>maiorGoleada) maiorGoleada=saldo;
+  });
+
+  const ctx = {
+    campeao: S.resultadoCopa.campeao ? 1 : 0,
+    ovr: C.meu?.ovr || 0,
+    mentalidade: S.mentalidade||'equilibrado',
+    time_brasileiro: timeBrasileiro ? 1 : 0,
+    tem_pele_atacante: (temPele && Object.values(S.xi).some(j=>j.nome.toLowerCase().includes('pelé')||j.nome.toLowerCase().includes('pele') ? ['ATA','PE','PD'].includes(j.posicao) : false)) ? 1 : 0,
+    tem_messi: temMessi ? 1 : 0,
+    tem_cr7: temCR7 ? 1 : 0,
+    tem_neymar: temNeymar ? 1 : 0,
+    tem_ronaldo_brasil: temRonaldoBrasil ? 1 : 0,
+    derrotas: jogosDaCopa - ((C.campanha||[]).filter(c=>c.txt.includes('V')).length), // aprox
+    empates: 0, // simplificado
+    gols_sofridos: golsSofridosCopa,
+    gols_marcados: golsMarcadosCopa,
+    venceu_penaltis: tevePenaltis ? 1 : 0,
+    maior_goleada: maiorGoleada,
+    times_diferentes: eras.length >= 5 ? 1 : 0,
+    ganhou_diario: DAILY?.ativo && S.resultadoCopa.campeao ? 1 : 0,
+  };
+
+  try{
+    const r = await api('salvar_partida','POST',{
+      campeao: !!S.resultadoCopa.campeao,
+      pontos: S.resultadoCopa.pontos||0,
+      ovr: S.resultadoCopa.ovr||0,
+      msg: S.resultadoCopa.msg||'',
+      time_nome: C.meu&&C.meu.nome?C.meu.nome:'Meu Time',
+      escalacao
+    });
+    if(r.pontos_ganhos > 0){
+      mostrarPtsGanhos(r.pontos_ganhos, r.liga?.nome||'');
+      _totalPtsLocal = r.total_pontos||0;
+    }
+  }catch(e){}
+
+  // Verificar conquistas
+  await verificarConquistasAposPartida(ctx);
+
+  // Daily: verificar conquista campeao_diario
+  if(DAILY?.ativo && S.resultadoCopa.campeao){
+    mostrarPtsGanhos(25, 'Desafio Diário concluído');
+  }
+}
+
 
 contaStatus();
 </script>

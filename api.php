@@ -330,7 +330,21 @@ switch ($action) {
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ");
         $st->execute([intval($u['id']), $campeao, $pontos, $msg, $ovr, $timeNome ?: 'Meu Time', $escalacao]);
-        echo json_encode(['sucesso' => true]);
+        // Adicionar pontos pela partida
+        ensurePontosTabelas($pdo);
+        $ptsPartida = 0;
+        if ($campeao) $ptsPartida = 100 + max(0, $ovr - 80);
+        elseif (str_contains($msg ?? '', 'Final'))   $ptsPartida = 60;
+        elseif (str_contains($msg ?? '', 'Semi'))    $ptsPartida = 40;
+        elseif (str_contains($msg ?? '', 'Quartas')) $ptsPartida = 20;
+        else $ptsPartida = 5;
+        if ($ptsPartida > 0) adicionarPontos($pdo, intval($u['id']), $ptsPartida, 'partida_'.(int)$campeao);
+        // Retornar total de pontos atualizado
+        $ptRow2 = $pdo->prepare("SELECT total_pontos FROM usuario_pontos WHERE usuario_id=?");
+        $ptRow2->execute([intval($u['id'])]);
+        $r2 = $ptRow2->fetch();
+        $totalPts2 = $r2 ? intval($r2['total_pontos']) : 0;
+        echo json_encode(['sucesso' => true, 'pontos_ganhos' => $ptsPartida, 'total_pontos' => $totalPts2, 'liga' => ligaDosPontos($totalPts2)]);
         break;
 
     case 'draft_init':
@@ -498,7 +512,393 @@ switch ($action) {
         echo json_encode($rows);
         break;
 
+
+    // ================================================================
+    // MÓDULO: PONTOS / LIGAS
+    // ================================================================
+    case 'perfil':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro'=>'Nao autenticado']); break; }
+        ensurePontosTabelas($pdo);
+        $uid = intval($u['id']);
+
+        // Pontos totais
+        $pts = $pdo->prepare("SELECT total_pontos FROM usuario_pontos WHERE usuario_id=? LIMIT 1");
+        $pts->execute([$uid]);
+        $ptRow = $pts->fetch();
+        $totalPts = $ptRow ? intval($ptRow['total_pontos']) : 0;
+
+        // Conquistas desbloqueadas
+        $cq = $pdo->prepare("SELECT conquista_id, desbloqueada_em FROM usuario_conquistas WHERE usuario_id=? ORDER BY desbloqueada_em DESC");
+        $cq->execute([$uid]);
+        $conquistas = $cq->fetchAll();
+
+        // Stats gerais
+        $st = $pdo->prepare("SELECT COUNT(*) AS jogos, SUM(campeao) AS titulos, MAX(ovr) AS melhor_ovr FROM partidas_usuario WHERE usuario_id=?");
+        $st->execute([$uid]);
+        $stats = $st->fetch();
+
+        echo json_encode([
+            'usuario'    => $u['usuario'],
+            'nome_time'  => $u['nome_time'],
+            'escudo'     => $u['escudo'],
+            'pontos'     => $totalPts,
+            'liga'       => ligaDosPontos($totalPts),
+            'conquistas' => $conquistas,
+            'stats'      => $stats,
+        ]);
+        break;
+
+    case 'ranking_ligas':
+        if (!iniciarModuloConta($pdo)) break;
+        ensurePontosTabelas($pdo);
+        try {
+            $rows = $pdo->query("
+                SELECT u.usuario, u.nome_time, u.escudo,
+                       COALESCE(up.total_pontos,0) AS pontos,
+                       COUNT(p.id) AS jogos,
+                       COALESCE(SUM(p.campeao),0) AS titulos
+                FROM usuarios u
+                LEFT JOIN usuario_pontos up ON up.usuario_id=u.id
+                LEFT JOIN partidas_usuario p ON p.usuario_id=u.id
+                GROUP BY u.id, u.usuario, u.nome_time, u.escudo, up.total_pontos
+                ORDER BY pontos DESC, titulos DESC
+                LIMIT 100
+            ")->fetchAll();
+            // Adiciona liga em cada linha
+            foreach ($rows as &$r) {
+                $r['liga'] = ligaDosPontos(intval($r['pontos']));
+                $r['pontos'] = intval($r['pontos']);
+            }
+            echo json_encode($rows);
+        } catch (Throwable $e) { echo json_encode([]); }
+        break;
+
+    case 'adicionar_pontos':
+        // Chamado internamente (pelo salvar_partida e duelo_resultado)
+        // Não exposto diretamente — protegido por sessão
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro'=>'Nao autenticado']); break; }
+        $body = json_decode(file_get_contents('php://input'), true);
+        $qtd = intval($body['pontos'] ?? 0);
+        $motivo = substr(trim($body['motivo'] ?? ''), 0, 100);
+        if ($qtd <= 0) { echo json_encode(['sucesso'=>false]); break; }
+        ensurePontosTabelas($pdo);
+        adicionarPontos($pdo, intval($u['id']), $qtd, $motivo);
+        $total = $pdo->prepare("SELECT total_pontos FROM usuario_pontos WHERE usuario_id=?");
+        $total->execute([intval($u['id'])]);
+        $r = $total->fetch();
+        echo json_encode(['sucesso'=>true,'total'=>intval($r['total_pontos']??0),'liga'=>ligaDosPontos(intval($r['total_pontos']??0))]);
+        break;
+
+    // ================================================================
+    // MÓDULO: CONQUISTAS
+    // ================================================================
+    case 'verificar_conquistas':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro'=>'Nao autenticado']); break; }
+        $body = json_decode(file_get_contents('php://input'), true);
+        // Recebe o contexto da partida
+        $ctx = $body['ctx'] ?? [];
+        ensurePontosTabelas($pdo);
+        $uid = intval($u['id']);
+
+        // Conquistas já desbloqueadas
+        $jaTem = $pdo->prepare("SELECT conquista_id FROM usuario_conquistas WHERE usuario_id=?");
+        $jaTem->execute([$uid]);
+        $desbloqueadas = array_column($jaTem->fetchAll(), 'conquista_id');
+
+        $novas = [];
+        $ptsGanhos = 0;
+        foreach (CONQUISTAS_DEF as $id => $def) {
+            if (in_array($id, $desbloqueadas)) continue;
+            // Verifica condição
+            $cumprida = false;
+            switch ($id) {
+                case 'primeiro_titulo':    $cumprida = !empty($ctx['campeao']); break;
+                case 'rei_brasil':         $cumprida = !empty($ctx['campeao']) && !empty($ctx['time_brasileiro']); break;
+                case 'underdog':           $cumprida = !empty($ctx['campeao']) && intval($ctx['ovr']??99)<=83; break;
+                case 'lendario':           $cumprida = !empty($ctx['campeao']) && intval($ctx['ovr']??99)<=78; break;
+                case 'lenda_viva':         $cumprida = !empty($ctx['tem_pele_atacante']); break;
+                case 'los_galacticos':     $cumprida = !empty($ctx['tem_messi']) && !empty($ctx['tem_cr7']) && !empty($ctx['tem_neymar']); break;
+                case 'trio_brasileiro':    $cumprida = !empty($ctx['tem_neymar']) && !empty($ctx['tem_ronaldo_brasil']) && !empty($ctx['tem_pele_atacante']); break;
+                case 'invicto':            $cumprida = !empty($ctx['campeao']) && intval($ctx['derrotas']??1)===0 && intval($ctx['empates']??1)===0; break;
+                case 'sem_sofrer':         $cumprida = !empty($ctx['campeao']) && intval($ctx['gols_sofridos']??99)===0; break;
+                case 'muralha':            $cumprida = !empty($ctx['campeao']) && intval($ctx['gols_sofridos']??99)<=3; break;
+                case 'goleador':           $cumprida = intval($ctx['gols_marcados']??0)>=20; break;
+                case 'virada_penaltis':    $cumprida = !empty($ctx['venceu_penaltis']); break;
+                case 'campeao_defensivo':  $cumprida = !empty($ctx['campeao']) && ($ctx['mentalidade']??'')===('defensivo'); break;
+                case 'campeao_ofensivo':   $cumprida = !empty($ctx['campeao']) && ($ctx['mentalidade']??'')===('ofensivo'); break;
+                case 'goleada_historica':  $cumprida = intval($ctx['maior_goleada']??0)>=5; break;
+                case 'equilibrista':       $cumprida = !empty($ctx['campeao']) && !empty($ctx['times_diferentes']); break;
+                case 'hat_trick_titulos':  // 3 títulos acumulados
+                    $t3 = $pdo->prepare("SELECT COUNT(*) FROM partidas_usuario WHERE usuario_id=? AND campeao=1");
+                    $t3->execute([$uid]);
+                    $cumprida = intval($t3->fetchColumn()) >= 3;
+                    break;
+                case 'veterano':           // 10 partidas
+                    $v = $pdo->prepare("SELECT COUNT(*) FROM partidas_usuario WHERE usuario_id=?");
+                    $v->execute([$uid]);
+                    $cumprida = intval($v->fetchColumn()) >= 10;
+                    break;
+                case 'duelo_vitorioso':    $cumprida = !empty($ctx['ganhou_duelo']); break;
+                case 'campeao_diario':     $cumprida = !empty($ctx['ganhou_diario']); break;
+            }
+            if ($cumprida) {
+                $ins = $pdo->prepare("INSERT IGNORE INTO usuario_conquistas (usuario_id, conquista_id) VALUES (?,?)");
+                $ins->execute([$uid, $id]);
+                $novas[] = $id;
+                $ptsGanhos += $def['pontos'];
+            }
+        }
+        if ($ptsGanhos > 0) adicionarPontos($pdo, $uid, $ptsGanhos, 'conquistas_'.implode(',',$novas));
+        echo json_encode(['novas'=>$novas,'pontos_ganhos'=>$ptsGanhos]);
+        break;
+
+    // ================================================================
+    // MÓDULO: DUELOS MULTIPLAYER
+    // ================================================================
+    case 'duelo_criar':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro'=>'Nao autenticado']); break; }
+        $body = json_decode(file_get_contents('php://input'), true);
+        $escalacao = json_encode($body['escalacao'] ?? [], JSON_UNESCAPED_UNICODE);
+        $ovr = intval($body['ovr'] ?? 0);
+        $formacao = substr(trim($body['formacao'] ?? '433'), 0, 10);
+        $mentalidade = substr(trim($body['mentalidade'] ?? 'equilibrado'), 0, 20);
+        $nome_time = substr(trim($body['nome_time'] ?? $u['nome_time']), 0, 80);
+        ensurePontosTabelas($pdo);
+        // Gera código único de 6 chars
+        do {
+            $codigo = strtoupper(substr(str_replace(['0','O','I','1','L'],['A','B','C','D','E'], base_convert(rand(1000000,9999999), 10, 36)), 0, 6));
+            $chk = $pdo->prepare("SELECT id FROM duelos WHERE codigo=? LIMIT 1");
+            $chk->execute([$codigo]);
+        } while ($chk->fetch());
+        $st = $pdo->prepare("INSERT INTO duelos (codigo, criador_id, criador_nome, criador_time, criador_ovr, criador_escalacao, criador_formacao, criador_mentalidade, status) VALUES (?,?,?,?,?,?,?,?,'aguardando')");
+        $st->execute([$codigo, intval($u['id']), $u['usuario'], $nome_time, $ovr, $escalacao, $formacao, $mentalidade]);
+        echo json_encode(['sucesso'=>true,'codigo'=>$codigo]);
+        break;
+
+    case 'duelo_entrar':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro'=>'Nao autenticado']); break; }
+        $body = json_decode(file_get_contents('php://input'), true);
+        $codigo = strtoupper(preg_replace('/[^A-Z0-9]/', '', $body['codigo'] ?? ''));
+        ensurePontosTabelas($pdo);
+        $duelo = $pdo->prepare("SELECT * FROM duelos WHERE codigo=? LIMIT 1");
+        $duelo->execute([$codigo]);
+        $d = $duelo->fetch();
+        if (!$d) { http_response_code(404); echo json_encode(['erro'=>'Duelo não encontrado']); break; }
+        if ($d['status'] !== 'aguardando') { echo json_encode(['erro'=>'Duelo já encerrado','duelo'=>$d]); break; }
+        if ($d['criador_id'] == $u['id']) { echo json_encode(['erro'=>'Você criou este duelo']); break; }
+        // Retorna dados do duelo para o desafiante montar o time
+        echo json_encode([
+            'sucesso'      => true,
+            'codigo'       => $codigo,
+            'adversario'   => $d['criador_nome'],
+            'adv_time'     => $d['criador_time'],
+            'adv_ovr'      => intval($d['criador_ovr']),
+            'adv_formacao' => $d['criador_formacao'],
+        ]);
+        break;
+
+    case 'duelo_resolver':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro'=>'Nao autenticado']); break; }
+        $body = json_decode(file_get_contents('php://input'), true);
+        $codigo = strtoupper(preg_replace('/[^A-Z0-9]/', '', $body['codigo'] ?? ''));
+        $escalacao2 = json_encode($body['escalacao'] ?? [], JSON_UNESCAPED_UNICODE);
+        $ovr2 = intval($body['ovr'] ?? 0);
+        $formacao2 = substr(trim($body['formacao'] ?? '433'), 0, 10);
+        $mentalidade2 = substr(trim($body['mentalidade'] ?? 'equilibrado'), 0, 20);
+        $nome2 = substr(trim($body['nome_time'] ?? $u['nome_time']), 0, 80);
+        ensurePontosTabelas($pdo);
+        $duelo = $pdo->prepare("SELECT * FROM duelos WHERE codigo=? AND status='aguardando' LIMIT 1");
+        $duelo->execute([$codigo]);
+        $d = $duelo->fetch();
+        if (!$d) { http_response_code(404); echo json_encode(['erro'=>'Duelo inválido ou já encerrado']); break; }
+        if ($d['criador_id'] == $u['id']) { echo json_encode(['erro'=>'Você não pode jogar contra si mesmo']); break; }
+
+        // Simula o jogo (lógica Poisson simples aqui no PHP)
+        $ovr1 = intval($d['criador_ovr']);
+        $diff = $ovr1 - $ovr2;
+        $base1 = 1.3 + $diff * 0.032;
+        $base2 = 1.3 - $diff * 0.032;
+        $g1 = max(0, poissonSample(max(0.15, $base1)));
+        $g2 = max(0, poissonSample(max(0.15, $base2)));
+        // Pênaltis se empate
+        $pen1 = 0; $pen2 = 0; $pen = false;
+        if ($g1 === $g2) {
+            $pen = true;
+            [$pen1, $pen2] = resolverPenaltis($ovr1, $ovr2);
+        }
+        $criadorGanhou = $g1 > $g2 || ($pen && $pen1 > $pen2);
+        $empate = !$pen && $g1 === $g2;
+        $placar = "$g1-$g2".($pen?" ($pen1-{$pen2}p)":'');
+
+        // Atualiza duelo
+        $up = $pdo->prepare("UPDATE duelos SET desafiante_id=?, desafiante_nome=?, desafiante_time=?, desafiante_ovr=?, desafiante_escalacao=?, desafiante_formacao=?, desafiante_mentalidade=?, gols1=?, gols2=?, pen1=?, pen2=?, status='encerrado', encerrado_em=NOW() WHERE codigo=?");
+        $up->execute([intval($u['id']), $u['usuario'], $nome2, $ovr2, $escalacao2, $formacao2, $mentalidade2, $g1, $g2, $pen1, $pen2, $codigo]);
+
+        // Distribui pontos
+        if (!$empate) {
+            $vencedor_id = $criadorGanhou ? $d['criador_id'] : $u['id'];
+            $perdedor_id = $criadorGanhou ? $u['id'] : $d['criador_id'];
+            adicionarPontos($pdo, $vencedor_id, 80, 'duelo_vitoria');
+            adicionarPontos($pdo, $perdedor_id, 20, 'duelo_derrota');
+        } else {
+            adicionarPontos($pdo, $d['criador_id'], 40, 'duelo_empate');
+            adicionarPontos($pdo, intval($u['id']), 40, 'duelo_empate');
+        }
+
+        echo json_encode([
+            'sucesso'       => true,
+            'placar'        => $placar,
+            'g1'            => $g1, 'g2' => $g2,
+            'pen'           => $pen, 'pen1' => $pen1, 'pen2' => $pen2,
+            'criador_ganhou'=> $criadorGanhou,
+            'empate'        => $empate,
+            'criador_nome'  => $d['criador_nome'],
+            'criador_time'  => $d['criador_time'],
+            'criador_ovr'   => $ovr1,
+            'desafiante_nome'=> $u['usuario'],
+            'desafiante_time'=> $nome2,
+        ]);
+        break;
+
+    case 'duelo_status':
+        $codigo = strtoupper(preg_replace('/[^A-Z0-9]/', '', $_GET['codigo'] ?? ''));
+        if (!$codigo) { http_response_code(400); echo json_encode(['erro'=>'Codigo obrigatorio']); break; }
+        ensurePontosTabelas($pdo);
+        $d = $pdo->prepare("SELECT codigo,criador_nome,criador_time,criador_ovr,desafiante_nome,desafiante_time,desafiante_ovr,gols1,gols2,pen1,pen2,status,encerrado_em FROM duelos WHERE codigo=? LIMIT 1");
+        $d->execute([$codigo]);
+        $row = $d->fetch();
+        if (!$row) { http_response_code(404); echo json_encode(['erro'=>'Nao encontrado']); break; }
+        echo json_encode($row);
+        break;
+
+    case 'duelos_recentes':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro'=>'Nao autenticado']); break; }
+        ensurePontosTabelas($pdo);
+        $uid = intval($u['id']);
+        $rows = $pdo->prepare("SELECT codigo, criador_nome, criador_time, criador_ovr, desafiante_nome, desafiante_time, desafiante_ovr, gols1, gols2, pen1, pen2, status, criado_em FROM duelos WHERE criador_id=? OR desafiante_id=? ORDER BY criado_em DESC LIMIT 10");
+        $rows->execute([$uid, $uid]);
+        echo json_encode($rows->fetchAll());
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['erro' => 'Acao invalida']);
 }
+
+// ================================================================
+// FUNÇÕES AUXILIARES — Pontos, Ligas, Conquistas
+// ================================================================
+function ensurePontosTabelas(PDO $pdo): void {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS usuario_pontos (
+        usuario_id INT PRIMARY KEY,
+        total_pontos INT NOT NULL DEFAULT 0,
+        atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        CONSTRAINT fk_up_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS usuario_conquistas (
+        usuario_id INT NOT NULL,
+        conquista_id VARCHAR(50) NOT NULL,
+        desbloqueada_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (usuario_id, conquista_id),
+        CONSTRAINT fk_uc_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS duelos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        codigo CHAR(6) NOT NULL UNIQUE,
+        criador_id INT NOT NULL,
+        criador_nome VARCHAR(80) NOT NULL,
+        criador_time VARCHAR(80) NOT NULL,
+        criador_ovr TINYINT NOT NULL DEFAULT 0,
+        criador_escalacao LONGTEXT NULL,
+        criador_formacao VARCHAR(10) NOT NULL DEFAULT '433',
+        criador_mentalidade VARCHAR(20) NOT NULL DEFAULT 'equilibrado',
+        desafiante_id INT NULL,
+        desafiante_nome VARCHAR(80) NULL,
+        desafiante_time VARCHAR(80) NULL,
+        desafiante_ovr TINYINT NULL,
+        desafiante_escalacao LONGTEXT NULL,
+        desafiante_formacao VARCHAR(10) NULL,
+        desafiante_mentalidade VARCHAR(20) NULL,
+        gols1 TINYINT NULL,
+        gols2 TINYINT NULL,
+        pen1 TINYINT NULL DEFAULT 0,
+        pen2 TINYINT NULL DEFAULT 0,
+        status ENUM('aguardando','encerrado') NOT NULL DEFAULT 'aguardando',
+        criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        encerrado_em TIMESTAMP NULL,
+        INDEX idx_codigo (codigo),
+        INDEX idx_criador (criador_id),
+        INDEX idx_desafiante (desafiante_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+}
+
+function adicionarPontos(PDO $pdo, int $uid, int $qtd, string $motivo): void {
+    $pdo->prepare("INSERT INTO usuario_pontos (usuario_id, total_pontos) VALUES (?,?) ON DUPLICATE KEY UPDATE total_pontos=total_pontos+?")
+        ->execute([$uid, $qtd, $qtd]);
+}
+
+function ligaDosPontos(int $pts): array {
+    $ligas = [
+        ['id'=>'elite',    'nome'=>'Copa433 Elite', 'icone'=>'👑', 'min'=>25000],
+        ['id'=>'diamante', 'nome'=>'Diamante',      'icone'=>'💠', 'min'=>10000],
+        ['id'=>'platina',  'nome'=>'Platina',        'icone'=>'💎', 'min'=>4000],
+        ['id'=>'ouro',     'nome'=>'Ouro',           'icone'=>'🥇', 'min'=>1500],
+        ['id'=>'prata',    'nome'=>'Prata',          'icone'=>'🥈', 'min'=>500],
+        ['id'=>'bronze',   'nome'=>'Bronze',         'icone'=>'🥉', 'min'=>0],
+    ];
+    foreach ($ligas as $l) { if ($pts >= $l['min']) return $l; }
+    return $ligas[5];
+}
+
+function poissonSample(float $lambda): int {
+    $L = exp(-$lambda); $k = 0; $p = 1.0;
+    do { $k++; $p *= (float)(mt_rand(1,PHP_INT_MAX)/PHP_INT_MAX); } while ($p > $L);
+    return $k - 1;
+}
+
+function resolverPenaltis(int $ovr1, int $ovr2): array {
+    $c1 = min(0.92, max(0.5, 0.7 + ($ovr1-$ovr2)*0.006));
+    $c2 = min(0.92, max(0.5, 0.7 - ($ovr1-$ovr2)*0.006));
+    $p1=0; $p2=0;
+    for($i=0;$i<5;$i++){ if(mt_rand()/PHP_INT_MAX<$c1)$p1++; if(mt_rand()/PHP_INT_MAX<$c2)$p2++; }
+    while($p1===$p2){ if(mt_rand()/PHP_INT_MAX<$c1)$p1++; if(mt_rand()/PHP_INT_MAX<$c2)$p2++; }
+    return [$p1,$p2];
+}
+
+// Definição de todas as conquistas
+const CONQUISTAS_DEF = [
+    'primeiro_titulo'   =>['nome'=>'Primeiro Título',     'icone'=>'🏆','desc'=>'Ganhe a Copa433 pela primeira vez.',             'pontos'=>20, 'raridade'=>'comum'],
+    'rei_brasil'        =>['nome'=>'Rei do Brasil',       'icone'=>'🇧🇷','desc'=>'Seja campeão com um time 100% brasileiro.',       'pontos'=>30, 'raridade'=>'raro'],
+    'underdog'          =>['nome'=>'Underdog',            'icone'=>'🐶','desc'=>'Ganhe com OVR médio ≤83.',                        'pontos'=>50, 'raridade'=>'epico'],
+    'lendario'          =>['nome'=>'Lendário',            'icone'=>'⚡','desc'=>'Ganhe com OVR médio ≤78.',                        'pontos'=>100,'raridade'=>'lendario'],
+    'lenda_viva'        =>['nome'=>'Lenda Viva',          'icone'=>'👑','desc'=>'Escale Pelé como atacante.',                      'pontos'=>20, 'raridade'=>'comum'],
+    'los_galacticos'    =>['nome'=>'Los Galácticos',      'icone'=>'⭐','desc'=>'Messi + Cristiano Ronaldo + Neymar no mesmo XI.', 'pontos'=>75, 'raridade'=>'epico'],
+    'trio_brasileiro'   =>['nome'=>'Trio Ouro Verde',     'icone'=>'🟢','desc'=>'Pelé + Ronaldo (Brasil) + Neymar no mesmo XI.',  'pontos'=>60, 'raridade'=>'raro'],
+    'invicto'           =>['nome'=>'Invicto',             'icone'=>'🛡️','desc'=>'Campeão sem nenhuma derrota ou empate.',         'pontos'=>60, 'raridade'=>'epico'],
+    'sem_sofrer'        =>['nome'=>'Muralha Absoluta',    'icone'=>'🧱','desc'=>'Campeão sem sofrer nenhum gol.',                 'pontos'=>80, 'raridade'=>'lendario'],
+    'muralha'           =>['nome'=>'Sólido',              'icone'=>'🔒','desc'=>'Campeão sofrendo ≤3 gols no torneio.',           'pontos'=>40, 'raridade'=>'raro'],
+    'goleador'          =>['nome'=>'Artilheiro',          'icone'=>'⚽','desc'=>'Marque 20+ gols em um torneio.',                 'pontos'=>30, 'raridade'=>'comum'],
+    'virada_penaltis'   =>['nome'=>'Drama Puro',          'icone'=>'🎭','desc'=>'Classifique-se em pênaltis.',                    'pontos'=>25, 'raridade'=>'comum'],
+    'campeao_defensivo' =>['nome'=>'Mourinho Mode',       'icone'=>'🧱','desc'=>'Campeão com mentalidade Defensiva.',              'pontos'=>35, 'raridade'=>'raro'],
+    'campeao_ofensivo'  =>['nome'=>'Jogo Bonito',         'icone'=>'🎨','desc'=>'Campeão com mentalidade Ofensiva.',              'pontos'=>35, 'raridade'=>'raro'],
+    'goleada_historica' =>['nome'=>'Goleada Histórica',   'icone'=>'💥','desc'=>'Vença por 5+ gols de diferença.',                'pontos'=>30, 'raridade'=>'comum'],
+    'equilibrista'      =>['nome'=>'Diversidade',         'icone'=>'🌍','desc'=>'Campeão com jogadores de 5+ eras diferentes.',   'pontos'=>45, 'raridade'=>'raro'],
+    'hat_trick_titulos' =>['nome'=>'Hat-trick',           'icone'=>'🎩','desc'=>'Ganhe a Copa433 3 vezes.',                       'pontos'=>75, 'raridade'=>'epico'],
+    'veterano'          =>['nome'=>'Veterano',            'icone'=>'📅','desc'=>'Jogue 10 partidas.',                             'pontos'=>25, 'raridade'=>'comum'],
+    'duelo_vitorioso'   =>['nome'=>'Caça-Duelos',         'icone'=>'⚔️','desc'=>'Vença seu primeiro duelo multiplayer.',          'pontos'=>40, 'raridade'=>'raro'],
+    'campeao_diario'    =>['nome'=>'Rei do Dia',          'icone'=>'📅','desc'=>'Seja campeão no Desafio Diário.',                'pontos'=>50, 'raridade'=>'epico'],
+];
