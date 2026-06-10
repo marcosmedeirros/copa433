@@ -22,9 +22,11 @@ html{font-size:16px;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(0,180,80,.07),transparent);pointer-events:none;z-index:0}
 .app{max-width:520px;margin:0 auto;position:relative;z-index:1}
+@media(min-width:900px){.app{max-width:1180px}}
 
 /* ───── HEADER ───── */
 .header{position:sticky;top:0;z-index:100;background:rgba(8,12,20,.85);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.05);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;max-width:1180px;margin:0 auto}
 .h-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--verde);letter-spacing:2px;line-height:1;text-shadow:0 0 20px rgba(0,233,106,.4)}
 .h-logo span{color:var(--amarelo);text-shadow:0 0 20px rgba(255,214,0,.4)}
 .btn-top{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;padding:8px 14px;border-radius:20px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:.2s;backdrop-filter:blur(8px)}
@@ -49,7 +51,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .btn-sm{font-size:14px;padding:11px 16px}
 
 /* ───── HOME ───── */
+/* mobile: single column */
+.home-desktop{display:flex;flex-direction:column}
+.home-left{padding:0}
+.home-right{padding:0}
+@media(min-width:900px){
+  .home-desktop{flex-direction:row;min-height:calc(100vh - 64px);align-items:stretch}
+  .home-left{flex:1.1;padding:60px 48px 40px;display:flex;flex-direction:column;justify-content:flex-start;border-right:1px solid rgba(255,255,255,.05);background:linear-gradient(180deg,rgba(0,80,30,.15) 0%,transparent 100%)}
+  .home-right{flex:1;padding:40px 48px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+}
 .home-hero{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(0,80,30,.25) 0%,transparent 100%);padding:28px 20px 22px;text-align:center}
+@media(min-width:900px){.home-hero{padding:0;background:none;text-align:left;margin-bottom:24px}}
 .home-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 46px,rgba(255,255,255,.012) 46px,rgba(255,255,255,.012) 47px),repeating-linear-gradient(90deg,transparent,transparent 46px,rgba(255,255,255,.012) 46px,rgba(255,255,255,.012) 47px);pointer-events:none}
 .home-pitch-line{position:absolute;bottom:0;left:10%;right:10%;height:1px;background:rgba(255,255,255,.08)}
 .home-brand{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,16vw,80px);line-height:.9;color:var(--verde);text-shadow:0 0 60px rgba(0,233,106,.4);letter-spacing:3px;position:relative;z-index:1}
@@ -87,6 +99,58 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   .draft-col-campo{flex:1;min-width:0;position:sticky;top:70px}
   .draft-col-roleta{flex:1;min-width:0}
   .campo{margin-bottom:10px}
+}
+@media(min-width:900px){
+  /* Header */
+  .header{padding:14px 28px}
+  .h-logo{font-size:30px}
+  /* Home — two-column layout */
+  .home-cta{padding:0;margin-top:24px}
+  .home-cta .btn{font-size:28px;padding:22px;max-width:360px}
+  .home-chips{padding:0;justify-content:flex-start;margin-top:0}
+  .home-brand{font-size:clamp(72px,5vw,96px)}
+  .home-tag{text-align:left;font-size:14px}
+  .home-desc{text-align:left;padding:0;font-size:14px}
+  .steps{padding:0;grid-template-columns:repeat(3,1fr)}
+  .modos{padding:0}
+  .dif-cards{max-width:none}
+  /* Draft */
+  #screen-draft{padding:0 28px}
+  .draft-top{padding:22px 2px 18px}
+  .draft-count{font-size:42px}
+  .draft-prog-t{font-size:12px}
+  .draft-cols{gap:28px}
+  .draft-col-campo{flex:1.05}
+  .draft-col-roleta{flex:.95}
+  .slot{width:72px}
+  .slot-c{width:44px;height:44px}
+  .slot.filled .slot-c{width:52px;height:52px;font-size:22px}
+  .slot-nome{font-size:12px;max-width:72px}
+  .rw-cell{font-size:26px}
+  .roleta-pos-n{font-size:36px}
+  .jitem{padding:14px 18px;border-radius:14px}
+  .jnome{font-size:18px}
+  .jrat{font-size:30px;min-width:46px}
+  .jbadge{font-size:11px;padding:5px 11px}
+  .draft-acoes .btn{font-size:22px;padding:18px}
+  /* Copa */
+  #screen-copa{padding:0 28px 40px}
+  .copa-hero{padding:28px 0 18px}
+  .copa-desktop{display:flex;gap:24px;align-items:flex-start}
+  .copa-left{flex:1;min-width:0;position:sticky;top:70px}
+  .copa-right{flex:1;min-width:0}
+  .match-card{padding:28px 20px 22px}
+  .match-score{font-size:60px}
+  .match-badge{font-size:36px}
+  .match-name{font-size:17px}
+  .gtab td:first-child{max-width:200px}
+  /* Modal — centered dialog on desktop */
+  .modal{align-items:center}
+  .sheet{border-radius:22px;max-width:560px;max-height:90vh;overflow-y:auto;transform:scale(.94);margin-bottom:0}
+  .modal.show .sheet{transform:scale(1)}
+  /* Ranking */
+  #screen-ranking{padding:0 28px 40px}
+  .rk-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 }
 .draft-top{padding:18px 2px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .draft-prog{flex:1}
@@ -169,6 +233,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* ───── COPA ───── */
 #screen-copa{padding:0 16px 30px}
+.copa-desktop{display:flex;flex-direction:column;gap:0}
+.copa-left{}
+.copa-right{}
 .copa-hero{text-align:center;padding:24px 0 16px;position:relative}
 .copa-hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(255,214,0,.06),transparent 70%);pointer-events:none}
 .copa-trofeu{font-size:52px;line-height:1;filter:drop-shadow(0 0 24px rgba(255,214,0,.45))}
@@ -311,6 +378,47 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .stat-n{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--verde);line-height:1;text-shadow:var(--glow-g)}
 .stat-l{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:1.5px;color:var(--txt2);text-transform:uppercase;margin-top:4px}
 
+/* ───── MATCH TIMELINE ───── */
+.tl-box{background:var(--c1);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:14px}
+.tl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.tl-speed-ctrl{display:flex;gap:6px}
+.spd-btn{background:var(--c3);border:1px solid rgba(255,255,255,.08);color:var(--txt2);font-size:15px;width:38px;height:38px;border-radius:50%;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center}
+.spd-btn.active{background:var(--verde);color:#000;box-shadow:0 0 12px rgba(0,233,106,.3)}
+.tl-min{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--verde);background:var(--c3);padding:3px 12px;border-radius:20px;min-width:50px;text-align:center}
+.tl-progress-wrap{background:var(--c3);border-radius:4px;height:4px;margin-bottom:12px;overflow:hidden}
+.tl-progress{height:100%;background:linear-gradient(90deg,var(--verde),var(--amarelo));width:0;transition:width .15s}
+.tl-feed{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;scroll-behavior:smooth}
+.tl-feed::-webkit-scrollbar{width:3px}
+.tl-feed::-webkit-scrollbar-thumb{background:var(--c4);border-radius:2px}
+.tl-ev{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:9px;background:var(--c2);font-family:'Barlow Condensed',sans-serif;font-size:13px;animation:fade .25s ease both;border-left:3px solid transparent}
+.tl-ev.gol-meu{border-left-color:var(--amarelo)}
+.tl-ev.gol-adv{border-left-color:rgba(255,80,80,.7)}
+.tl-ev.pen-ok{border-left-color:var(--verde)}
+.tl-ev.pen-err{border-left-color:var(--c4);opacity:.7}
+.tl-ev.tl-info{justify-content:center;color:var(--txt2);font-size:10px;letter-spacing:2px;text-transform:uppercase;background:transparent;border-left:none;padding:4px}
+.tl-ev-min{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--txt2);min-width:28px}
+.tl-ev-icon{font-size:13px}
+.tl-ev-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tl-ev-sc{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--txt);white-space:nowrap}
+
+/* ───── DIFICULDADE (home) ───── */
+.dif-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:0}
+.dif{background:var(--c1);border:1.5px solid var(--c3);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;transition:.2s}
+.dif.sel{border-color:var(--verde);background:rgba(0,233,106,.05)}
+.dif-icon{font-size:20px;margin-bottom:4px}
+.dif-n{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px}
+.dif-d{font-size:10px;color:var(--txt2);margin-top:3px;line-height:1.4}
+
+/* ───── CONQUISTAS / STREAK ───── */
+.streak-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1a1200,#0d0a00);border:1px solid rgba(255,214,0,.25);border-radius:14px;padding:12px 16px;margin-bottom:14px}
+.streak-fire{font-size:28px;line-height:1;filter:drop-shadow(0 0 8px rgba(255,120,0,.5))}
+.streak-info{flex:1}
+.streak-n{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--amarelo);line-height:1}
+.streak-l{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--txt2);letter-spacing:.5px}
+
+/* ───── COMPARTILHAR ───── */
+.btn-share{background:linear-gradient(135deg,#1877f2,#0e5fc8);color:#fff;box-shadow:0 4px 16px rgba(24,119,242,.3)}
+
 /* ───── OUTROS RESULTADOS ───── */
 .outros-box{background:var(--c1);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:none}
 .outros-t{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;margin-bottom:8px}
@@ -334,9 +442,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="app">
 
 <header class="header">
-  <div class="h-logo">COPA<span>433</span></div>
-  <div>
-    <button class="btn-top" id="btn-conta-hdr" onclick="abrirContaModal()">👤 Entrar</button>
+  <div class="header-inner">
+    <div class="h-logo">COPA<span>433</span></div>
+    <div style="display:flex;align-items:center;gap:8px" id="hdr-btns">
+      <button class="btn-top hdr-nav" id="hdr-home" onclick="irHome()" style="display:none">Início</button>
+      <button class="btn-top hdr-nav" id="hdr-ranking" onclick="irRanking()" style="display:none">🏅 Ranking</button>
+      <button class="btn-top" id="btn-conta-hdr" onclick="abrirContaModal()">👤 Entrar</button>
+    </div>
   </div>
 </header>
 
@@ -345,47 +457,79 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <!-- HOME -->
 <section id="screen-home" class="screen active">
-  <div class="home-hero">
-    <div class="home-pitch-line"></div>
-    <div class="home-brand">COPA<span>433</span></div>
-    <div class="home-tag">Draft · Times Históricos · Campeonato</div>
-  </div>
+  <div class="home-desktop">
 
-  <div class="home-cta">
-    <button class="btn btn-primary" onclick="comecarDraft()">⚽ JOGAR!</button>
-  </div>
-
-  <div class="home-chips">
-    <div class="conta-chip" id="home-conta-chip" onclick="abrirContaModal()">
-      <span>👤</span><span id="home-conta-label">Entrar para salvar histórico</span>
-    </div>
-  </div>
-
-  <p class="home-desc">Gire a roleta, sorteie um <b>time histórico</b>, escolha 1 jogador. Monte seu <b>4-3-3</b> e dispute a Copa433 contra os maiores times da história.</p>
-
-  <div class="steps">
-    <div class="step"><div class="step-icon">🎰</div><div class="step-n">PASSO 01</div><div class="step-l">Gire a roleta</div></div>
-    <div class="step"><div class="step-icon">⭐</div><div class="step-n">PASSO 02</div><div class="step-l">Escolha um jogador</div></div>
-    <div class="step"><div class="step-icon">🏆</div><div class="step-n">PASSO 03</div><div class="step-l">Dispute a Copa</div></div>
-  </div>
-
-  <div class="modos">
-    <div class="modos-t">Modo de jogo</div>
-    <div class="modo-cards">
-      <div class="modo sel" id="modo-classico" onclick="selModo('classico')">
-        <span class="modo-chk">✓</span><div class="modo-n">Clássico</div>
-        <div class="modo-d">Você vê o rating de cada jogador. 2 giros extras.</div>
+    <!-- LEFT: branding + play -->
+    <div class="home-left">
+      <div class="home-hero">
+        <div class="home-pitch-line"></div>
+        <div class="home-brand">COPA<span>433</span></div>
+        <div class="home-tag">Draft · Times Históricos · Campeonato</div>
       </div>
-      <div class="modo" id="modo-memoria" onclick="selModo('memoria')">
-        <span class="modo-chk">✓</span><div class="modo-n">Memória</div>
-        <div class="modo-d">Sem ratings. Só seu conhecimento. 1 giro extra.</div>
-      </div>
-    </div>
-  </div>
 
-  <footer class="rodape">
-    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
-  </footer>
+      <p class="home-desc" style="margin-top:16px">Gire a roleta, sorteie um <b>time histórico</b>, escolha 1 jogador. Monte seu <b>4-3-3</b> e dispute a Copa433 contra os maiores times da história.</p>
+
+      <div class="steps" style="margin-top:16px">
+        <div class="step"><div class="step-icon">🎰</div><div class="step-n">PASSO 01</div><div class="step-l">Gire a roleta</div></div>
+        <div class="step"><div class="step-icon">⭐</div><div class="step-n">PASSO 02</div><div class="step-l">Escolha um jogador</div></div>
+        <div class="step"><div class="step-icon">🏆</div><div class="step-n">PASSO 03</div><div class="step-l">Dispute a Copa</div></div>
+      </div>
+
+      <footer class="rodape" style="margin-top:auto;padding-top:32px">
+        Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
+      </footer>
+    </div>
+
+    <!-- RIGHT: settings + play button -->
+    <div class="home-right">
+
+      <div class="home-chips">
+        <div class="conta-chip" id="home-conta-chip" onclick="abrirContaModal()">
+          <span>👤</span><span id="home-conta-label">Entrar para salvar histórico</span>
+        </div>
+      </div>
+
+      <div class="modos">
+        <div class="modos-t">Modo de jogo</div>
+        <div class="modo-cards">
+          <div class="modo sel" id="modo-classico" onclick="selModo('classico')">
+            <span class="modo-chk">✓</span><div class="modo-n">Clássico</div>
+            <div class="modo-d">Você vê o rating de cada jogador. 2 giros extras.</div>
+          </div>
+          <div class="modo" id="modo-memoria" onclick="selModo('memoria')">
+            <span class="modo-chk">✓</span><div class="modo-n">Memória</div>
+            <div class="modo-d">Sem ratings. Só seu conhecimento. 1 giro extra.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="modos-t" style="margin-bottom:10px">Dificuldade</div>
+        <div class="dif-cards">
+          <div class="dif sel" id="dif-facil" onclick="selDif('facil')">
+            <div class="dif-icon">😊</div>
+            <div class="dif-n">FÁCIL</div>
+            <div class="dif-d">Adversários mais fracos · +1 reroll</div>
+          </div>
+          <div class="dif" id="dif-normal" onclick="selDif('normal')">
+            <div class="dif-icon">⚽</div>
+            <div class="dif-n">NORMAL</div>
+            <div class="dif-d">Experiência padrão</div>
+          </div>
+          <div class="dif" id="dif-dificil" onclick="selDif('dificil')">
+            <div class="dif-icon">💀</div>
+            <div class="dif-n">DIFÍCIL</div>
+            <div class="dif-d">Adversários mais fortes · 0 rerolls</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-cta">
+        <button class="btn btn-primary" onclick="comecarDraft()">⚽ JOGAR!</button>
+      </div>
+
+    </div><!-- /home-right -->
+  </div><!-- /home-desktop -->
 </section>
 
 <!-- CONTA / HISTÓRICO -->
@@ -479,38 +623,60 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="copa-meutime" id="copa-meutime">Seu XI · OVR —</div>
   </div>
 
-  <!-- jogo atual em destaque -->
-  <div class="match-card" id="match-card">
-    <div class="match-side match-home">
-      <div class="match-badge" id="m-home-badge">★</div>
-      <div class="match-name" id="m-home-name">—</div>
-      <div class="match-ovr" id="m-home-ovr">—</div>
-    </div>
-    <div class="match-center">
-      <div class="match-score" id="m-score"><span class="match-vs" id="m-vs">VS</span></div>
-      <div class="match-pen" id="m-pen"></div>
-      <div class="match-status" id="m-status"></div>
-    </div>
-    <div class="match-side match-away">
-      <div class="match-badge" id="m-away-badge">★</div>
-      <div class="match-name" id="m-away-name">—</div>
-      <div class="match-ovr" id="m-away-ovr">—</div>
-    </div>
-  </div>
+  <div class="copa-desktop">
+    <!-- LEFT: match card + timeline + actions -->
+    <div class="copa-left">
+      <!-- jogo atual em destaque -->
+      <div class="match-card" id="match-card">
+        <div class="match-side match-home">
+          <div class="match-badge" id="m-home-badge">★</div>
+          <div class="match-name" id="m-home-name">—</div>
+          <div class="match-ovr" id="m-home-ovr">—</div>
+        </div>
+        <div class="match-center">
+          <div class="match-score" id="m-score"><span class="match-vs" id="m-vs">VS</span></div>
+          <div class="match-pen" id="m-pen"></div>
+          <div class="match-status" id="m-status"></div>
+        </div>
+        <div class="match-side match-away">
+          <div class="match-badge" id="m-away-badge">★</div>
+          <div class="match-name" id="m-away-name">—</div>
+          <div class="match-ovr" id="m-away-ovr">—</div>
+        </div>
+      </div>
 
-  <!-- outros resultados da rodada -->
-  <div class="outros-box" id="outros-box">
-    <div class="outros-t">Outros resultados da rodada</div>
-    <div id="outros-lista"></div>
-  </div>
+      <!-- timeline da partida -->
+      <div class="tl-box" id="tl-box" style="display:none">
+        <div class="tl-header">
+          <div class="tl-min" id="tl-min">0'</div>
+          <div class="tl-speed-ctrl">
+            <button class="spd-btn" id="spd-slow" onclick="setSimSpeed('slow')" title="Lento">🐢</button>
+            <button class="spd-btn active" id="spd-normal" onclick="setSimSpeed('normal')" title="Normal">▶</button>
+            <button class="spd-btn" id="spd-fast" onclick="setSimSpeed('fast')" title="Rápido">⚡</button>
+          </div>
+        </div>
+        <div class="tl-progress-wrap"><div class="tl-progress" id="tl-progress"></div></div>
+        <div class="tl-feed" id="tl-feed"></div>
+      </div>
 
-  <!-- área dinâmica: tabela de grupos OU chaveamento -->
-  <div id="copa-area"></div>
+      <div class="copa-acoes">
+        <button class="btn btn-amarelo" id="btn-proximo" onclick="proximoJogo()" style="font-size:20px;padding:16px">▶ SIMULAR MEU JOGO</button>
+        <button class="btn btn-primary" id="btn-novacopa" onclick="comecarDraft()" style="display:none;font-size:18px">⚽ MONTAR OUTRO TIME</button>
+        <button class="btn btn-secondary btn-sm" id="btn-verxi" onclick="abrirMeuXI()">Ver meu XI</button>
+      </div>
+    </div>
 
-  <div class="copa-acoes">
-    <button class="btn btn-amarelo" id="btn-proximo" onclick="proximoJogo()" style="font-size:20px;padding:16px">▶ SIMULAR MEU JOGO</button>
-    <button class="btn btn-primary" id="btn-novacopa" onclick="comecarDraft()" style="display:none;font-size:18px">⚽ MONTAR OUTRO TIME</button>
-    <button class="btn btn-secondary btn-sm" id="btn-verxi" onclick="abrirMeuXI()">Ver meu XI</button>
+    <!-- RIGHT: outros + standings/bracket -->
+    <div class="copa-right">
+      <!-- outros resultados da rodada -->
+      <div class="outros-box" id="outros-box">
+        <div class="outros-t">Outros resultados da rodada</div>
+        <div id="outros-lista"></div>
+      </div>
+
+      <!-- área dinâmica: tabela de grupos OU chaveamento -->
+      <div id="copa-area"></div>
+    </div>
   </div>
 
   <footer class="rodape">
@@ -585,9 +751,21 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div id="mc-logado" style="display:none">
       <div class="sheet-t" id="mc-logado-nome">Minha Conta</div>
       <div class="sheet-d" id="mc-logado-email" style="font-size:12px;color:var(--txt2)"></div>
+
+      <!-- Escudo do time -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+        <div id="escudo-preview" style="width:64px;height:64px;border-radius:50%;background:var(--c3);border:2px dashed var(--c4);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="$('escudo-input').click()" title="Trocar escudo">🛡️</div>
+        <div style="flex:1">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;margin-bottom:4px">Escudo do Time</div>
+          <div style="font-size:11px;color:var(--txt2);line-height:1.5">Clique no escudo para enviar uma imagem (PNG/JPG). Aparece na tela de partida.</div>
+          <button class="btn btn-secondary btn-sm" onclick="$('escudo-input').click()" style="margin-top:6px;width:auto;padding:6px 14px;font-size:12px">📁 Escolher imagem</button>
+        </div>
+      </div>
+      <input type="file" id="escudo-input" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="display:none" onchange="escudoFileChanged(this)">
+
       <input class="sheet-in" id="c-nome-time" type="text" placeholder="Nome do seu time" maxlength="80">
       <div class="sheet-a" style="margin-top:10px">
-        <button class="btn btn-amarelo btn-sm" onclick="contaSalvarTime()">Salvar nome</button>
+        <button class="btn btn-amarelo btn-sm" onclick="contaSalvarTime()">💾 Salvar</button>
         <button class="btn btn-secondary btn-sm" onclick="contaLogout()">Sair</button>
       </div>
       <button class="btn btn-secondary btn-sm" onclick="irConta();fecharContaModal()" style="margin-top:8px">Ver histórico completo →</button>
@@ -655,6 +833,7 @@ const S={
   times:[],jogadores:[],combos:{},
   conta:null,
   nomeTimeCustom:'',
+  dificuldade:'facil',
   xi:{},                 // key da posicao -> jogador escolhido
   comboAtual:null,       // {time_id, sigla, time_nome, decada} sorteado
   jogadorSel:null,       // jogador clicado aguardando posicionamento
@@ -669,7 +848,16 @@ const S={
 const $=id=>document.getElementById(id);
 function load(b){$('load').classList.toggle('show',b)}
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800)}
-function tela(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$('screen-'+id).classList.add('active');window.scrollTo(0,0)}
+function tela(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $('screen-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  // show/hide nav buttons
+  const notHome=id!=='home';
+  const hh=$('hdr-home'),hr=$('hdr-ranking');
+  if(hh)hh.style.display=notHome?'':'none';
+  if(hr)hr.style.display=(id!=='ranking'&&id!=='home'&&id!=='conta')?'':'none';
+}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 // Escolhe a parte mais reconhecível do nome para caber no slot
 function nomeCurto(nome){
@@ -714,8 +902,10 @@ async function api(action,method='GET',body=null){
 }
 
 function selModo(m){S.modo=m;S.rerollMax=(m==='memoria')?1:2;$('modo-classico').classList.toggle('sel',m==='classico');$('modo-memoria').classList.toggle('sel',m==='memoria')}
+function selDif(d){S.dificuldade=d;['facil','normal','dificil'].forEach(x=>$('dif-'+x)&&$('dif-'+x).classList.toggle('sel',x===d));}
 function irHome(){tela('home')}
 function irConta(){tela('conta');carregarHistoricoConta()}
+function irRanking(){tela('ranking');}
 
 // ===== INICIAR DRAFT =====
 async function comecarDraft(){
@@ -734,7 +924,10 @@ async function comecarDraft(){
   // reset
   S.xi={};S.comboAtual=null;S.jogadorSel=null;S.resultado=null;
   S.rerollUsados=0;S.girouNestaRodada=false;S.rolando=false;
-  S.rerollMax=(S.modo==='memoria')?1:2;
+  const difMap={facil:3,normal:2,dificil:0};
+  const baseReroll=(S.modo==='memoria')?1:2;
+  const difBonus=difMap[S.dificuldade||'normal']||0;
+  S.rerollMax=S.dificuldade==='dificil'?0:(baseReroll + (S.dificuldade==='facil'?1:0));
   const logEl=$('draft-log');if(logEl)logEl.innerHTML='';
   montarCampo();
   atualizarProgresso();
@@ -1113,12 +1306,16 @@ function montarAdversarios(){
       const ovrPrecomp=tInfo.ovr?parseInt(tInfo.ovr):0;
       const ovrCalc=Math.round(c.ratings.sort((a,b)=>b-a).slice(0,11).reduce((a,b)=>a+b,0)/11);
       const comp=tInfo.competicao||'';
+      const baseOvr=ovrPrecomp||ovrCalc;
+      // apply difficulty modifier
+      const difAdj={facil:-6, normal:0, dificil:+8};
+      const adjOvr=Math.max(50,Math.min(99,baseOvr+(difAdj[S.dificuldade]||0)));
       return {
         nome:c.time_nome, sigla:c.sigla, decada:c.decada,
         competicao:comp,
         label:c.time_nome+(comp?' · '+comp:'')+' '+labelEra(c.decada),
         logo:logoDoTime(c.time_nome,c.decada),
-        ovr:ovrPrecomp||ovrCalc
+        ovr:adjOvr
       };
     });
   return lista;
@@ -1393,27 +1590,172 @@ function mostrarJogo(J){
   $('m-away-ovr').textContent='OVR '+J.away.ovr;
   const lgH=logoDoTime(J.home.nome||J.home.label,J.home.decada||'');
   const lgA=logoDoTime(J.away.nome||J.away.label,J.away.decada||'');
-  $('m-home-badge').innerHTML=lgH?`<img class="match-logo" src="${esc(lgH)}" alt="${esc(J.home.label)}">`:(J.home.eu?'🟢':'⚪');
-  $('m-away-badge').innerHTML=lgA?`<img class="match-logo" src="${esc(lgA)}" alt="${esc(J.away.label)}">`:(J.away.eu?'🟢':'⚪');
+  const escudoMeu=S.conta?.escudo;
+  const homeImg=J.home.eu&&escudoMeu?escudoMeu:lgH;
+  const awayImg=J.away.eu&&escudoMeu?escudoMeu:lgA;
+  $('m-home-badge').innerHTML=homeImg?`<img class="match-logo" src="${esc(homeImg)}" alt="${esc(J.home.label)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`:(J.home.eu?'🟢':'⚪');
+  $('m-away-badge').innerHTML=awayImg?`<img class="match-logo" src="${esc(awayImg)}" alt="${esc(J.away.label)}" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`:(J.away.eu?'🟢':'⚪');
   $('m-score').innerHTML='<span class="match-vs">VS</span>';
   $('m-pen').textContent='';
   $('m-status').textContent='';
   const card=$('match-card');card.classList.toggle('eu-home',!!J.home.eu);card.classList.toggle('eu-away',!!J.away.eu);
 }
-function animarPlacar(J,onDone){
-  $('m-status').textContent='FIM DE JOGO';
-  let step=0;const tot=12;
-  const t=setInterval(()=>{
-    step++;
-    const a=Math.min(J.g1,Math.round(J.g1*step/tot)+(Math.random()<.3?1:0));
-    const b=Math.min(J.g2,Math.round(J.g2*step/tot)+(Math.random()<.3?1:0));
-    $('m-score').textContent=`${Math.min(a,J.g1)} – ${Math.min(b,J.g2)}`;
-    if(step>=tot){clearInterval(t);
-      $('m-score').textContent=`${J.g1} – ${J.g2}`;
-      if(J.pen)$('m-pen').textContent=`pênaltis ${J.pen1} × ${J.pen2}`;
-      setTimeout(onDone,500);
+/* ── Simulação com Timeline ── */
+const SIM_SPEED = {slow:200, normal:70, fast:15};
+let _simSpeedKey = 'normal';
+
+function setSimSpeed(k){
+  _simSpeedKey = k;
+  ['slow','normal','fast'].forEach(s=>{
+    const b=$('spd-'+s);
+    if(b) b.classList.toggle('active', s===k);
+  });
+}
+
+function _rndMinutes(n, max){
+  // generate n unique sorted random minutes within [1..max]
+  const pool=new Set();
+  let tries=0;
+  while(pool.size<n && tries<500){pool.add(1+Math.floor(Math.random()*max));tries++;}
+  return [...pool].sort((a,b)=>a-b);
+}
+
+function _addFeedEv(cls, min, icon, txt, score){
+  const feed=$('tl-feed');
+  const el=document.createElement('div');
+  el.className='tl-ev '+cls;
+  el.innerHTML=`<span class="tl-ev-min">${min?min+"'":''}</span><span class="tl-ev-icon">${icon}</span><span class="tl-ev-txt">${txt}</span><span class="tl-ev-sc">${score}</span>`;
+  feed.appendChild(el);
+  feed.scrollTop=feed.scrollHeight;
+}
+
+function _addFeedInfo(msg){
+  const feed=$('tl-feed');
+  const el=document.createElement('div');
+  el.className='tl-ev tl-info';
+  el.textContent=msg;
+  feed.appendChild(el);
+  feed.scrollTop=feed.scrollHeight;
+}
+
+function animarPlacar(J, onDone){
+  // Show timeline box
+  const tlBox=$('tl-box');
+  tlBox.style.display='block';
+  $('tl-feed').innerHTML='';
+  $('tl-progress').style.width='0%';
+  $('tl-min').textContent="0'";
+  $('m-status').textContent='';
+  $('m-score').innerHTML='<span class="match-vs" id="m-vs">VS</span>';
+  $('m-pen').textContent='';
+
+  const homeLabel = $('m-home-name').textContent;
+  const awayLabel = $('m-away-name').textContent;
+
+  // Generate goal events (regular time, 90 min)
+  const goalsH = _rndMinutes(J.g1, 90);
+  const goalsA = _rndMinutes(J.g2, 90);
+  const events = [];
+  goalsH.forEach(m=>events.push({min:m, who:'home', icon:'⚽', label:homeLabel}));
+  goalsA.forEach(m=>events.push({min:m, who:'away', icon:'⚽', label:awayLabel}));
+  events.sort((a,b)=>a.min-b.min);
+
+  let evIdx=0, curMin=0, scoreH=0, scoreA=0;
+  const totalMin=J.pen?105:90;
+
+  function tick(){
+    if(curMin>=totalMin){
+      // end of regular time
+      $('tl-progress').style.width='100%';
+      $('tl-min').textContent=totalMin+"'";
+      $('m-score').textContent=`${scoreH} – ${scoreA}`;
+      $('m-status').textContent='FIM DE JOGO';
+      if(J.pen){
+        // Show penalties
+        setTimeout(()=>rodarPenaltis(J, homeLabel, awayLabel, ()=>{
+          tlBox.style.display='none';
+          onDone();
+        }), SIM_SPEED[_simSpeedKey]*3);
+      } else {
+        setTimeout(()=>{tlBox.style.display='none'; onDone();}, 800);
+      }
+      return;
     }
-  },70);
+    curMin = Math.min(curMin+1, totalMin);
+    $('tl-min').textContent=curMin+"'";
+    $('tl-progress').style.width=`${Math.round(curMin/totalMin*100)}%`;
+    // fire any goals at this minute
+    while(evIdx<events.length && events[evIdx].min<=curMin){
+      const ev=events[evIdx++];
+      if(ev.who==='home') scoreH++;
+      else scoreA++;
+      $('m-score').textContent=`${scoreH} – ${scoreA}`;
+      _addFeedEv('gol-'+(ev.who==='home'?'meu':'adv'), ev.min, ev.icon, ev.label, `${scoreH}–${scoreA}`);
+    }
+    setTimeout(tick, SIM_SPEED[_simSpeedKey]);
+  }
+  // small delay before start
+  setTimeout(tick, 300);
+}
+
+function rodarPenaltis(J, homeLabel, awayLabel, onDone){
+  $('tl-feed').innerHTML='';
+  $('tl-min').textContent="P";
+  $('tl-progress').style.width='100%';
+  $('m-pen').textContent='';
+  _addFeedInfo('── PÊNALTIS ──');
+
+  const total = Math.max(J.pen1, J.pen2) + Math.abs(J.pen1-J.pen2);
+  // reconstruct sequence: winner gets more
+  // simple: 5 kicks each, if still tied SD kicks
+  const seqH=[], seqA=[];
+  // who wins pens
+  const winnerH = J.pen1 > J.pen2;
+  // generate kick results summing to pen1 and pen2
+  function genKicks(scored, total5){
+    // total5: how many kicks taken (5 normally)
+    const kicks=[];
+    let rem=scored;
+    for(let i=0;i<total5;i++){
+      const needed=rem>0 && (total5-i)===rem; // must score remaining
+      const ok=needed||(rem>0&&Math.random()<0.85);
+      kicks.push(!!ok);
+      if(ok)rem--;
+    }
+    // ensure total
+    const got=kicks.filter(Boolean).length;
+    if(got!==scored){
+      // fix: flip one
+      for(let i=0;i<kicks.length;i++){
+        if(got>scored&&kicks[i]){kicks[i]=false;break;}
+        if(got<scored&&!kicks[i]){kicks[i]=true;break;}
+      }
+    }
+    return kicks;
+  }
+  const kicks5 = 5;
+  const kH = genKicks(J.pen1, kicks5);
+  const kA = genKicks(J.pen2, kicks5);
+
+  let i=0, sH=0, sA=0;
+  function nextKick(){
+    if(i >= kicks5){
+      // done
+      $('m-pen').textContent=`pênaltis ${J.pen1} × ${J.pen2}`;
+      setTimeout(onDone, 600);
+      return;
+    }
+    const hOk=kH[i], aOk=kA[i];
+    if(hOk) sH++;
+    _addFeedEv(hOk?'pen-ok':'pen-err', null, hOk?'✅':'❌', homeLabel, `${sH}–${sA}`);
+    setTimeout(()=>{
+      if(aOk) sA++;
+      _addFeedEv(aOk?'pen-ok':'pen-err', null, aOk?'✅':'❌', awayLabel, `${sH}–${sA}`);
+      i++;
+      setTimeout(nextKick, SIM_SPEED[_simSpeedKey]*4);
+    }, SIM_SPEED[_simSpeedKey]*4);
+  }
+  nextKick();
 }
 
 function renderCopa(){
@@ -1466,12 +1808,19 @@ function fimDaCopa(campeao,msg){
       <div class="stat-box"><div class="stat-n" style="color:#ff7676">${C.golsSofridos}</div><div class="stat-l">Gols sofridos</div></div>
     </div>`;
 
+  const streakHtml=campeao?renderStreakBanner(true):renderStreakBanner(false);
   const banner=`<div class="copa-banner ${campeao?'camp':'elim'}">
      <div class="copa-banner-t">${campeao?'🏆 CAMPEÃO DA COPA433!':'❌ '+esc(msg)}</div>
      <div class="copa-banner-d">${campeao?'Seu XI levantou a taça! OVR '+C.meu.ovr:'Sua campanha terminou aqui. Monte outro time e tente de novo.'}</div>
-  </div>${statsHtml}${campanhaHtml}`;
+  </div>${streakHtml}${statsHtml}${campanhaHtml}`;
   $('copa-area').insertAdjacentHTML('afterbegin',banner);
   if(campeao)$('copa-trofeu').textContent='🏆';
+
+  // Share button
+  const shareDiv=document.createElement('div');
+  shareDiv.style.cssText='display:flex;gap:8px;justify-content:center;margin-top:12px';
+  shareDiv.innerHTML=`<button class="btn btn-share" onclick="compartilharResultado()" style="flex:1;max-width:260px">📤 Compartilhar resultado</button>`;
+  $('copa-area').insertAdjacentElement('afterbegin', shareDiv);
 
   let base=20;
   if(campeao)base=100;
@@ -1481,6 +1830,30 @@ function fimDaCopa(campeao,msg){
   S.resultadoCopa={campeao,msg,ovr:C.meu.ovr,pontos:base+C.meu.ovr};
   salvarPartidaConta();
   window.scrollTo(0,0);
+}
+
+function compartilharResultado(){
+  const r=S.resultadoCopa;
+  if(!r)return;
+  const nomeTime=S.conta?.nome_time||'Meu Time FC';
+  const emoji=r.campeao?'🏆':'❌';
+  const texto=r.campeao
+    ? `${emoji} ${nomeTime} é CAMPEÃO da Copa433! OVR ${r.ovr} | Copa433 — monte seu dream team histórico!`
+    : `${emoji} ${nomeTime} chegou até ${r.msg} na Copa433! OVR ${r.ovr} | Copa433 — tente você também!`;
+  if(navigator.share){
+    navigator.share({title:'Copa433', text:texto, url:location.href}).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(texto).then(()=>mostrarToast('Resultado copiado!')).catch(()=>mostrarToast(texto));
+  }
+}
+
+function mostrarToast(msg){
+  let t=document.getElementById('_toast');
+  if(!t){t=document.createElement('div');t.id='_toast';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a2540;color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;z-index:9999;pointer-events:none;transition:opacity .3s;font-family:Barlow Condensed,sans-serif';
+    document.body.appendChild(t);}
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._to);t._to=setTimeout(()=>t.style.opacity='0',2200);
 }
 
 // ===== CONTA =====
@@ -1517,6 +1890,7 @@ function abrirContaModal(){
     $('mc-logado-nome').textContent='@'+S.conta.usuario;
     $('mc-logado-email').textContent=S.conta.email||'';
     $('c-nome-time').value=S.conta.nome_time||'';
+    _renderEscudo();
   }else{
     $('mc-deslogado').style.display='block';
     $('mc-logado').style.display='none';
@@ -1610,10 +1984,39 @@ async function contaSalvarTime(){
   load(true);
   try{
     await api('conta_nome_time','POST',{nome_time});
-    toast('Nome do time atualizado!');
+    // also save escudo if pending
+    if(S._escudoPendente!==undefined){
+      await api('conta_salvar_escudo','POST',{escudo:S._escudoPendente||''});
+      delete S._escudoPendente;
+    }
+    toast('Perfil atualizado!');
     await contaStatus();
+    _renderEscudo();
   }catch(e){toast(e.message)}
   load(false);
+}
+
+/* ── Escudo do time ── */
+function _renderEscudo(){
+  const prev=$('escudo-preview');
+  if(!prev)return;
+  const src=S.conta?.escudo;
+  if(src){prev.innerHTML=`<img src="${src}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;}
+  else{prev.innerHTML='🛡️';}
+}
+function escudoFileChanged(input){
+  const file=input.files[0];
+  if(!file)return;
+  if(file.size>600*1024){toast('Imagem muito grande (máx. 600KB)');input.value='';return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const dataUrl=e.target.result;
+    const prev=$('escudo-preview');
+    prev.innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    S._escudoPendente=dataUrl;
+    toast('Clique em Salvar para confirmar o escudo');
+  };
+  reader.readAsDataURL(file);
 }
 
 // ===== NOME DO TIME (antes da Copa) =====
@@ -1675,6 +2078,31 @@ async function carregarHistoricoConta(){
   }catch(e){toast('Erro ao carregar histórico')}
   load(false);
 }
+/* ── Streak local ── */
+function getStreak(){
+  try{return JSON.parse(localStorage.getItem('c433_streak')||'{"atual":0,"record":0}');}catch{return{atual:0,record:0};}
+}
+function salvarStreak(s){localStorage.setItem('c433_streak',JSON.stringify(s));}
+function registrarStreakResult(campeao){
+  const s=getStreak();
+  if(campeao){s.atual++;if(s.atual>s.record)s.record=s.atual;}
+  else{s.atual=0;}
+  salvarStreak(s);
+  return s;
+}
+function renderStreakBanner(campeao){
+  const s=registrarStreakResult(campeao);
+  if(s.atual<1)return '';
+  const fire=s.atual>=3?'🔥':'⚡';
+  return `<div class="streak-banner">
+    <div class="streak-fire">${fire}</div>
+    <div class="streak-info">
+      <div class="streak-n">${s.atual} Título${s.atual>1?'s':''} seguido${s.atual>1?'s':''}</div>
+      <div class="streak-l">Recorde pessoal: ${s.record} · ${s.atual>=5?'🏅 Lendário':s.atual>=3?'⭐ Em chamas':'Continue assim!'}</div>
+    </div>
+  </div>`;
+}
+
 async function salvarPartidaConta(){
   if(!S.conta||!S.resultadoCopa)return;
   const escalacao=Object.values(S.xi).map(j=>({nome:j.nome,posicao:j.posicao,rating:j.rating,sigla:j.sigla}));

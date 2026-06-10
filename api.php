@@ -57,6 +57,10 @@ function garantirTabelasConta(PDO $pdo): void {
     if (!hasColumn($pdo, 'usuarios', 'email')) {
         $pdo->exec("ALTER TABLE usuarios ADD COLUMN email VARCHAR(120) NULL UNIQUE AFTER usuario");
     }
+    // Adiciona coluna escudo (base64 do escudo do time)
+    if (!hasColumn($pdo, 'usuarios', 'escudo')) {
+        $pdo->exec("ALTER TABLE usuarios ADD COLUMN escudo MEDIUMTEXT NULL AFTER nome_time");
+    }
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS partidas_usuario (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -89,7 +93,7 @@ function garantirTabelasConta(PDO $pdo): void {
 function usuarioLogado(PDO $pdo): ?array {
     $id = intval($_SESSION['uid'] ?? 0);
     if (!$id) return null;
-    $st = $pdo->prepare("SELECT id, usuario, email, nome_time FROM usuarios WHERE id = ?");
+    $st = $pdo->prepare("SELECT id, usuario, email, nome_time, escudo FROM usuarios WHERE id = ?");
     $st->execute([$id]);
     $u = $st->fetch();
     return $u ?: null;
@@ -157,15 +161,15 @@ switch ($action) {
         // Aceita login por usuário OU e-mail
         $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
         if ($isEmail) {
-            $st = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time FROM usuarios WHERE email = ?");
+            $st = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time, escudo FROM usuarios WHERE email = ?");
         } else {
-            $st = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time FROM usuarios WHERE usuario = ?");
+            $st = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time, escudo FROM usuarios WHERE usuario = ?");
         }
         $st->execute([strtolower($login)]);
         $u = $st->fetch();
         if (!$u) {
             // tenta o outro campo como fallback
-            $st2 = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time FROM usuarios WHERE usuario = ? OR email = ?");
+            $st2 = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time, escudo FROM usuarios WHERE usuario = ? OR email = ?");
             $st2->execute([$login, strtolower($login)]);
             $u = $st2->fetch();
         }
@@ -245,6 +249,25 @@ switch ($action) {
         if ($nomeTime === '') $nomeTime = 'Meu Time';
         $st = $pdo->prepare("UPDATE usuarios SET nome_time = ? WHERE id = ?");
         $st->execute([$nomeTime, intval($u['id'])]);
+        echo json_encode(['sucesso' => true]);
+        break;
+
+    case 'conta_salvar_escudo':
+        if (!iniciarModuloConta($pdo)) break;
+        $u = usuarioLogado($pdo);
+        if (!$u) { http_response_code(401); echo json_encode(['erro' => 'Nao autenticado']); break; }
+        $body = json_decode(file_get_contents('php://input'), true);
+        $escudo = (string)($body['escudo'] ?? '');
+        // Validate: must be a data URL image (png/jpg/gif/webp/svg)
+        if ($escudo !== '' && !preg_match('/^data:image\/(png|jpeg|gif|webp|svg\+xml);base64,/', $escudo)) {
+            http_response_code(400); echo json_encode(['erro' => 'Formato de imagem inválido']); break;
+        }
+        // Limit to ~500KB base64
+        if (strlen($escudo) > 700000) {
+            http_response_code(400); echo json_encode(['erro' => 'Imagem muito grande (máx. ~500KB)']); break;
+        }
+        $st = $pdo->prepare("UPDATE usuarios SET escudo = ? WHERE id = ?");
+        $st->execute([$escudo ?: null, intval($u['id'])]);
         echo json_encode(['sucesso' => true]);
         break;
 
