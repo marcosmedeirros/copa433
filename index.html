@@ -476,13 +476,22 @@ body::before{
 }
 .jitem.tier-prata::before{background:linear-gradient(180deg,#C0D0E8,#9AAEC8,#6888A8);box-shadow:0 0 12px rgba(154,174,200,.55)}
 .jitem.tier-prata .jrat{color:var(--silver)}
-/* Bronze — OVR < 75 */
+/* Bronze — OVR 80–85 */
 .jitem.tier-bronze{
   background:linear-gradient(120deg,rgba(205,127,50,.12),rgba(205,127,50,.04) 60%,var(--c1));
   border-color:rgba(205,127,50,.22);
 }
 .jitem.tier-bronze::before{background:linear-gradient(180deg,#E09850,#CD7F32,#9A5820);box-shadow:0 0 12px rgba(205,127,50,.55)}
-.jitem.tier-bronze .jrat{color:var(--bronze)}
+.jitem.tier-bronze .jrat{color:#F4D03F}
+/* Cobre — OVR 75–79 */
+.jitem.tier-cobre{
+  background:linear-gradient(120deg,rgba(230,126,34,.10),rgba(230,126,34,.03) 60%,var(--c1));
+  border-color:rgba(230,126,34,.20);
+}
+.jitem.tier-cobre::before{background:linear-gradient(180deg,#E67E22,#C0622A,#9A4820);box-shadow:0 0 10px rgba(230,126,34,.45)}
+.jitem.tier-cobre .jrat{color:#E67E22}
+/* Fraco — OVR < 75 */
+.jitem.tier-fraco .jrat{color:#E74C3C}
 
 .jitem:hover,.jitem:active{border-color:rgba(0,230,118,.3);background:var(--c2);transform:translateX(2px)}
 .jitem.sel{
@@ -1010,16 +1019,6 @@ body::before{
     </div>
     <div class="draft-count"><span id="draft-n">0</span><span>/11</span></div>
   </div>
-  <div id="box-score-bar" style="display:none;background:var(--c1);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin-bottom:10px">
-    <div style="display:flex;align-items:center;justify-content:space-between">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt2);text-transform:uppercase">BOX SCORE · <span id="bs-n">0</span>/11</div>
-      <div id="bs-ovr" style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1;text-shadow:var(--glow-y)">—</div>
-    </div>
-    <div style="display:flex;gap:16px;margin-top:4px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px"><span id="bs-atk" style="color:var(--verde)">—</span><span style="font-size:10px;letter-spacing:1.5px;color:var(--txt2);margin-left:4px;font-family:'Barlow Condensed',sans-serif">ATAQUE</span></div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px"><span id="bs-def" style="color:#5bcbff">—</span><span style="font-size:10px;letter-spacing:1.5px;color:var(--txt2);margin-left:4px;font-family:'Barlow Condensed',sans-serif">DEFESA</span></div>
-    </div>
-  </div>
 
   <div class="draft-cols">
     <div class="draft-col-campo">
@@ -1068,6 +1067,11 @@ body::before{
         </div>
         <div class="combo-result" id="combo-result"></div>
         <div class="escolha-lista" id="escolha-lista">
+          <div id="squad-ovr-row" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.5px;margin-bottom:4px">
+            <span id="bs-atk" style="color:var(--verde)"></span><span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1.5px;color:var(--txt2);margin-left:3px">ATQ</span>
+            <span style="color:var(--c4);margin:0 6px">·</span>
+            <span id="bs-def" style="color:#5bcbff"></span><span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1.5px;color:var(--txt2);margin-left:3px">DEF</span>
+          </div>
           <div class="squad-head">
             <span class="squad-head-l">Elenco — escolha um jogador</span>
             <span class="squad-head-r" id="squad-sigla"></span>
@@ -1483,6 +1487,7 @@ function selDif(d){S.dificuldade=d;['facil','normal','dificil'].forEach(x=>$('di
 
 function mudarFormacao(key){
   if(!FORMACOES_DEF[key])return;
+  if(preenchidos()>0){toast('Formação não pode ser mudada após escalar jogadores');return;}
   S.formacaoKey=key;
   FORMACAO=FORMACOES_DEF[key].slots;
   LINHAS=FORMACOES_DEF[key].linhas;
@@ -1715,7 +1720,7 @@ function mostrarCombo(combo){
   const lg=logoDoTime(combo.time_nome);
   $('combo-result').innerHTML=`${lg?`<img class="combo-logo" src="${esc(lg)}" alt="${esc(combo.time_nome)}">`:''}<b>${esc(combo.time_nome)}</b> · ${labelEra(combo.decada)}`;
   $('combo-result').classList.add('show');
-  $('squad-sigla').textContent=combo.sigla+' · '+labelEra(combo.decada);
+  $('squad-sigla').textContent=combo.time_nome+' - '+combo.decada;
 
   renderElenco();
 
@@ -1750,7 +1755,7 @@ function renderElenco(){
     const posTxt=posicoesJogador(j).map(p=>NOMEPOS[p]||p).join(' / ');
     if(!cheia)nDisp++;
     const sel=(S.jogadorSel&&S.jogadorSel.id===j.id)?'sel':'';
-    const tier=j.rating>=90?'tier-gold':j.rating>=85?'tier-prata':j.rating>=80?'tier-bronze':'';
+    const tier=j.rating>=90?'tier-gold':j.rating>=86?'tier-prata':j.rating>=80?'tier-bronze':j.rating>=75?'tier-cobre':'tier-fraco';
     return `
     <div class="jitem ${mem?'memoria':''} ${cheia?'bloqueado':''} ${sel} ${tier}" ${cheia?'':`onclick="selecionarJogador(${j.id})"`}>
       <div class="jrat">${mem?'?':j.rating}</div>
@@ -1890,7 +1895,7 @@ function marcarSlot(k,j){
   const rat=S.modo==='classico'?j.rating:'★';
   ovrEl.textContent=rat;
   ovrEl.style.color=S.modo==='classico'?ovrCor(j.rating):'#ccc';
-  slot.querySelector('.slot-nome').textContent=nomeCurto(j.nome);
+  slot.querySelector('.slot-nome').textContent=nomeCurto(j.nome).toUpperCase();
 }
 
 function atualizarProgresso(){
@@ -1898,10 +1903,10 @@ function atualizarProgresso(){
   $('draft-n').textContent=n;
   $('draft-fill').style.width=(n/11*100)+'%';
 
-  const bar=$('box-score-bar');
-  if(!bar) return;
-  if(n===0){ bar.style.display='none'; return; }
-  bar.style.display='block';
+  const row=$('squad-ovr-row');
+  if(!row) return;
+  if(n===0){ row.style.display='none'; return; }
+  row.style.display='block';
 
   const DEF_POS=new Set(['GOL','ZAG','LAT','VOL']);
   const jogadores=Object.values(S.xi);
@@ -1909,11 +1914,7 @@ function atualizarProgresso(){
   const atkJs=jogadores.filter(j=>!DEF_POS.has(j.posicao));
   const avg=arr=>arr.length?Math.round(arr.reduce((a,j)=>a+(+j.rating),0)/arr.length):null;
 
-  const ovr=Math.round(jogadores.reduce((a,j)=>a+(+j.rating),0)/jogadores.length);
   const atk=avg(atkJs), def=avg(defJs);
-
-  $('bs-n').textContent=n;
-  $('bs-ovr').textContent=ovr;
   $('bs-atk').textContent=atk!==null?atk:'—';
   $('bs-def').textContent=def!==null?def:'—';
 }
