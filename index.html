@@ -1455,8 +1455,8 @@ const LOGO_MAP = [
   [['atletico nacional','atleticonacional'],                 'atleticonacional.png'],
   [['ecbahia','bahia'],                                      'ecbahia.png'],
   [['barcelona','barca'],                                    'barcelona.png'],
-  [['bayer','leverkusen','bayerleverkusen'],                 'bayerleverkusen.png'],
   [['bayern','munique','munich','bayernmunchen'],            'bayernmunchen.png'],
+  [['bayer','leverkusen','bayerleverkusen'],                 'bayerleverkusen.png'],
   [['benfica'],                                              'benfica.png'],
   [['boca','juniors','bocajuniors'],                         'bocajuniors.png'],
   [['botafogo'],                                             'botafogo.png'],
@@ -2558,7 +2558,7 @@ function compartilharResultado(){
   const linhaXI=xi.map(j=>{
     const nm=nomeCurto(j.nome).toUpperCase();
     const era=j.decada;
-    return `${j.posicao} ${nm} ${j.time_nome}/${era}`;
+    return `${j.posicao} | ${nm} | ${j.time_nome}/${era}`;
   }).join('\n');
 
   const linhas=[];
@@ -2575,12 +2575,13 @@ function compartilharResultado(){
   linhas.push('copa433.site');
 
   const texto=linhas.join('\n');
-  navigator.clipboard.writeText(texto)
-    .then(()=>mostrarToast('Time copiado! Cole onde quiser 📋'))
-    .catch(()=>{
-      if(navigator.share) navigator.share({title:'Copa433',text:texto,url:'https://copa433.site'}).catch(()=>{});
-      else mostrarToast(texto);
+  if(navigator.share){
+    navigator.share({title:'Copa433',text:texto,url:'https://copa433.site'}).catch(()=>{
+      navigator.clipboard.writeText(texto).then(()=>mostrarToast('Copiado! 📋')).catch(()=>{});
     });
+  } else {
+    navigator.clipboard.writeText(texto).then(()=>mostrarToast('Time copiado! Cole onde quiser 📋')).catch(()=>mostrarToast(texto));
+  }
 }
 
 function mostrarToast(msg){
