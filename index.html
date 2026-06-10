@@ -49,21 +49,24 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .btn-sm{font-size:14px;padding:11px 16px}
 
 /* ───── HOME ───── */
-.hero{padding:0;position:relative;overflow:hidden;text-align:center}
-.hero-bg{height:220px;background:linear-gradient(180deg,rgba(0,100,40,.18) 0%,transparent 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
-.hero-bg::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 38px,rgba(255,255,255,.015) 38px,rgba(255,255,255,.015) 39px),repeating-linear-gradient(90deg,transparent,transparent 38px,rgba(255,255,255,.015) 38px,rgba(255,255,255,.015) 39px)}
-.hero-emblem{position:relative;z-index:1}
-.hero-pts{font-family:'Bebas Neue',sans-serif;font-size:clamp(82px,23vw,120px);line-height:.84;color:var(--verde);text-shadow:0 0 80px rgba(0,233,106,.35),0 0 160px rgba(0,233,106,.12);letter-spacing:-2px}
-.hero-pts span{color:var(--amarelo);text-shadow:0 0 60px rgba(255,214,0,.3)}
-.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:clamp(13px,3.5vw,17px);color:var(--txt2);letter-spacing:4px;text-transform:uppercase;margin-top:4px;position:relative;z-index:1}
-.hero-desc{font-size:14px;color:var(--txt2);max-width:360px;margin:16px auto 24px;line-height:1.7;padding:0 20px}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px;margin-bottom:24px}
-.step{background:linear-gradient(135deg,var(--c1),var(--c2));border-radius:var(--radius);padding:18px 10px;text-align:center;border:1px solid rgba(255,255,255,.06);box-shadow:var(--shadow)}
-.step-icon{font-size:22px;margin-bottom:6px}
-.step-n{font-family:'Bebas Neue',sans-serif;font-size:11px;color:var(--verde);letter-spacing:2px;opacity:.7;margin-bottom:2px}
-.step-l{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;color:var(--txt);margin-top:3px;line-height:1.35;letter-spacing:.3px}
+.home-hero{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(0,80,30,.25) 0%,transparent 100%);padding:28px 20px 22px;text-align:center}
+.home-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 46px,rgba(255,255,255,.012) 46px,rgba(255,255,255,.012) 47px),repeating-linear-gradient(90deg,transparent,transparent 46px,rgba(255,255,255,.012) 46px,rgba(255,255,255,.012) 47px);pointer-events:none}
+.home-pitch-line{position:absolute;bottom:0;left:10%;right:10%;height:1px;background:rgba(255,255,255,.08)}
+.home-brand{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,16vw,80px);line-height:.9;color:var(--verde);text-shadow:0 0 60px rgba(0,233,106,.4);letter-spacing:3px;position:relative;z-index:1}
+.home-brand span{color:var(--amarelo);text-shadow:0 0 40px rgba(255,214,0,.4)}
+.home-tag{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:3px;color:var(--txt2);text-transform:uppercase;margin-top:6px;position:relative;z-index:1}
+.home-cta{padding:16px 16px 8px}
+.home-cta .btn{font-size:24px;padding:20px;border-radius:18px;letter-spacing:2px}
+.home-chips{display:flex;justify-content:center;padding:0 16px 16px}
+.home-desc{font-size:13px;color:var(--txt2);text-align:center;padding:0 24px;margin-bottom:20px;line-height:1.7}
+.home-desc b{color:var(--txt)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px;margin-bottom:20px}
+.step{background:var(--c1);border-radius:14px;padding:16px 10px;text-align:center;border:1px solid rgba(255,255,255,.06)}
+.step-icon{font-size:20px;margin-bottom:5px}
+.step-n{font-family:'Bebas Neue',sans-serif;font-size:10px;color:var(--verde);letter-spacing:2px;opacity:.6;margin-bottom:2px}
+.step-l{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;color:var(--txt);line-height:1.35}
 .modos{padding:0 16px 22px}
-.modos-t{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2.5px;color:var(--txt3);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.modos-t{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2.5px;color:var(--txt3);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .modos-t::before,.modos-t::after{content:'';flex:1;height:1px;background:var(--c3)}
 .modo-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .modo{background:var(--c1);border:1.5px solid var(--c3);border-radius:var(--radius);padding:16px 14px;cursor:pointer;transition:.2s;position:relative}
@@ -72,10 +75,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .modo.sel .modo-chk{display:flex}
 .modo-n{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px}
 .modo-d{font-size:11px;color:var(--txt2);margin-top:6px;line-height:1.5}
-.cta{padding:0 16px}
+.cta{display:none}/* removido, botão agora em home-cta */
 
 /* ───── DRAFT ───── */
 #screen-draft{padding:0 14px}
+.draft-cols{display:flex;flex-direction:column;gap:0}
+.draft-col-campo{}
+.draft-col-roleta{}
+@media(min-width:680px){
+  .draft-cols{flex-direction:row;gap:16px;align-items:flex-start}
+  .draft-col-campo{flex:1;min-width:0;position:sticky;top:70px}
+  .draft-col-roleta{flex:1;min-width:0}
+  .campo{margin-bottom:10px}
+}
 .draft-top{padding:18px 2px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .draft-prog{flex:1}
 .draft-prog-t{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:var(--txt2);text-transform:uppercase}
@@ -94,7 +106,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .form-linha:last-child{margin-bottom:0}
 .slot{display:flex;flex-direction:column;align-items:center;gap:5px;width:58px;cursor:default}
 .slot-c{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);border:2px dashed rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:.3s cubic-bezier(.34,1.56,.64,1);position:relative}
-.slot.filled .slot-c{background:linear-gradient(135deg,#00e96a,#00a84a);border:2.5px solid rgba(255,255,255,.8);width:42px;height:42px;box-shadow:0 0 16px rgba(0,233,106,.5),0 2px 8px rgba(0,0,0,.4)}
+.slot.filled .slot-c{background:linear-gradient(135deg,#00e96a,#00a84a);border:2.5px solid rgba(255,255,255,.8);width:42px;height:42px;box-shadow:0 0 16px rgba(0,233,106,.5),0 2px 8px rgba(0,0,0,.4);cursor:pointer}
 .slot-abbr{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.5px}
 .slot.filled .slot-abbr{display:none}
 .slot-ovr{display:none;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#001a0c;line-height:1;letter-spacing:.5px;text-shadow:0 1px 0 rgba(255,255,255,.3)}
@@ -105,6 +117,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .slot.alvo .slot-c{border-color:var(--amarelo);border-style:solid;background:rgba(255,214,0,.15);box-shadow:0 0 0 4px rgba(255,214,0,.15),0 0 20px rgba(255,214,0,.4);animation:pulse 1.3s ease infinite}
 .slot.alvo .slot-abbr{color:var(--amarelo)}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(255,214,0,.12),0 0 14px rgba(255,214,0,.35)}50%{box-shadow:0 0 0 6px rgba(255,214,0,.08),0 0 28px rgba(255,214,0,.55)}}
+.slot.mover-origem .slot-c{border-color:#ff8c00;border-style:solid;background:rgba(255,140,0,.2);box-shadow:0 0 0 4px rgba(255,140,0,.15),0 0 20px rgba(255,140,0,.4);animation:pulse-mover 1s ease infinite;cursor:pointer}
+@keyframes pulse-mover{0%,100%{box-shadow:0 0 0 3px rgba(255,140,0,.15),0 0 14px rgba(255,140,0,.3)}50%{box-shadow:0 0 0 6px rgba(255,140,0,.08),0 0 26px rgba(255,140,0,.5)}}
 
 /* ───── ROLETA ───── */
 .roleta-box{background:linear-gradient(180deg,var(--c1),var(--c2));border-radius:var(--radius);border:1px solid rgba(255,255,255,.07);padding:20px 16px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
@@ -112,11 +126,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .roleta-pos-n{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;color:var(--verde);margin-bottom:16px;line-height:1;text-shadow:var(--glow-g)}
 .roleta-windows{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
 .rw{background:var(--bg);border-radius:12px;border:1px solid var(--c3);overflow:hidden;position:relative}
-.rw::before{content:'';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:52px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);z-index:3;pointer-events:none}
+.rw::before{content:'';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:60px;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);z-index:3;pointer-events:none}
 .rw-l{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;padding:8px 10px 5px;text-align:center;border-bottom:1px solid var(--c3)}
-.rw-win{height:52px;overflow:hidden;position:relative}
+.rw-win{height:60px;overflow:hidden;position:relative}
 .rw-strip{position:absolute;left:0;right:0;top:0;will-change:transform;z-index:2}
-.rw-cell{height:52px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;text-align:center;padding:0 6px;line-height:1}
+.rw-cell{height:60px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;text-align:center;padding:0 6px;line-height:1}
 .rw-win::before,.rw-win::after{content:'';position:absolute;left:0;right:0;height:18px;z-index:4;pointer-events:none}
 .rw-win::before{top:0;background:linear-gradient(var(--bg),transparent)}
 .rw-win::after{bottom:0;background:linear-gradient(transparent,var(--bg))}
@@ -261,7 +275,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* ───── TABS ───── */
 .tabs{display:flex;gap:0;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.08);margin-bottom:16px;background:var(--bg)}
-.tab{flex:1;background:transparent;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:11px;border:none;cursor:pointer;transition:.2s}
+.tab{flex:1;background:transparent;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:11px 6px;border:none;cursor:pointer;transition:.2s}
 .tab.active{background:linear-gradient(135deg,var(--verde),var(--verde-d));color:#001a0e;font-weight:700}
 
 /* ───── DRAFT LOG ───── */
@@ -331,25 +345,30 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 <!-- HOME -->
 <section id="screen-home" class="screen active">
-  <div class="hero">
-    <div class="hero-bg">
-      <div class="hero-emblem">
-        <div class="hero-pts">4-3-3<span>⚽</span></div>
-        <div class="hero-sub">COPA433 · Times Históricos</div>
-      </div>
-    </div>
-    <p class="hero-desc">Gire a roleta, sorteie um <b>time histórico</b>, escolha 1 jogador. Monte seu 4-3-3 e dispute a <b>Copa433</b> contra os maiores times da história.</p>
+  <div class="home-hero">
+    <div class="home-pitch-line"></div>
+    <div class="home-brand">COPA<span>433</span></div>
+    <div class="home-tag">Draft · Times Históricos · Campeonato</div>
   </div>
-  <div style="text-align:center;padding:0 16px 16px">
+
+  <div class="home-cta">
+    <button class="btn btn-primary" onclick="comecarDraft()">⚽ JOGAR!</button>
+  </div>
+
+  <div class="home-chips">
     <div class="conta-chip" id="home-conta-chip" onclick="abrirContaModal()">
       <span>👤</span><span id="home-conta-label">Entrar para salvar histórico</span>
     </div>
   </div>
+
+  <p class="home-desc">Gire a roleta, sorteie um <b>time histórico</b>, escolha 1 jogador. Monte seu <b>4-3-3</b> e dispute a Copa433 contra os maiores times da história.</p>
+
   <div class="steps">
     <div class="step"><div class="step-icon">🎰</div><div class="step-n">PASSO 01</div><div class="step-l">Gire a roleta</div></div>
     <div class="step"><div class="step-icon">⭐</div><div class="step-n">PASSO 02</div><div class="step-l">Escolha um jogador</div></div>
     <div class="step"><div class="step-icon">🏆</div><div class="step-n">PASSO 03</div><div class="step-l">Dispute a Copa</div></div>
   </div>
+
   <div class="modos">
     <div class="modos-t">Modo de jogo</div>
     <div class="modo-cards">
@@ -363,13 +382,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
     </div>
   </div>
-  <div class="cta">
-    <button class="btn btn-primary" style="font-size:22px;padding:18px" onclick="comecarDraft()">⚽ JOGAR!</button>
-  </div>
-  <footer class="rodape" style="margin-top:16px">
-    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">Marcos Medeiros</a>
-    <span class="sep">·</span>
-    <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
+
+  <footer class="rodape">
+    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
   </footer>
 </section>
 
@@ -408,11 +423,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="draft-count"><span id="draft-n">0</span><span>/11</span></div>
   </div>
 
-  <div class="campo">
-    <div class="campo-bg"><div class="campo-centro"></div></div>
-    <div id="formacao"></div>
-  </div>
+  <div class="draft-cols">
+    <div class="draft-col-campo">
+      <div class="campo">
+        <div class="campo-bg"><div class="campo-centro"></div></div>
+        <div id="formacao"></div>
+      </div>
+      <div id="draft-log" class="draft-log"></div>
+    </div>
 
+    <div class="draft-col-roleta">
   <div class="roleta-box">
     <div class="roleta-pos-t">Gire para sortear</div>
     <div class="roleta-pos-n" id="roleta-pos">TIPO · TIME</div>
@@ -439,14 +459,15 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
   <div class="draft-acoes">
     <button class="btn btn-primary" id="btn-girar" onclick="girarRoleta()" style="font-size:20px;padding:16px">🎰 GIRAR ROLETA</button>
-    <button class="btn btn-amarelo" id="btn-simular" onclick="pedirNomeTime()" style="display:none;font-size:20px;padding:16px">🏆 DISPUTAR A COPA</button>
+    <button class="btn btn-amarelo" id="btn-simular" onclick="iniciarCopa()" style="display:none;font-size:20px;padding:16px">🏆 DISPUTAR A COPA</button>
     <button class="btn btn-secondary btn-sm" onclick="irHome()">← Recomeçar</button>
   </div>
   <div class="reroll-info" id="reroll-info">
     Giros extras: <span class="reroll-dots" id="reroll-dots"></span>
   </div>
   <div class="draft-hint" id="draft-hint">A roleta sorteia um time histórico. Escolha 1 jogador por giro.</div>
-  <div id="draft-log" class="draft-log"></div>
+    </div><!-- /draft-col-roleta -->
+  </div><!-- /draft-cols -->
 </section>
 
 <!-- COPA433 -->
@@ -502,24 +523,32 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- modal: conta -->
 <div class="modal" id="modal-conta" onclick="if(event.target===this)fecharContaModal()">
   <div class="sheet">
-    <!-- view: não logado -->
+
+    <!-- VIEW: NÃO LOGADO -->
     <div id="mc-deslogado">
       <div class="sheet-t">Minha Conta</div>
       <div class="sheet-d">Entre ou crie uma conta para salvar seu histórico.</div>
+
       <div class="tabs">
         <button class="tab active" id="tab-login-btn" onclick="setContaTab('login')">Entrar</button>
         <button class="tab" id="tab-reg-btn" onclick="setContaTab('reg')">Criar conta</button>
+        <button class="tab" id="tab-reset-btn" onclick="setContaTab('reset')">Redefinir</button>
       </div>
+
+      <!-- LOGIN -->
       <div id="mc-login-body">
-        <input class="sheet-in" id="c-user" type="text" placeholder="Usuário" maxlength="80" autocomplete="username" onkeydown="if(event.key==='Enter')$('c-pass').focus()">
+        <input class="sheet-in" id="c-user" type="text" placeholder="Usuário ou e-mail" maxlength="120" autocomplete="username" onkeydown="if(event.key==='Enter')$('c-pass').focus()">
         <input class="sheet-in" id="c-pass" type="password" placeholder="Senha" maxlength="80" autocomplete="current-password" style="margin-top:8px" onkeydown="if(event.key==='Enter')contaLogin()">
         <div class="sheet-a">
           <button class="btn btn-secondary btn-sm" onclick="fecharContaModal()">Cancelar</button>
           <button class="btn btn-primary btn-sm" onclick="contaLogin()">Entrar</button>
         </div>
       </div>
+
+      <!-- CRIAR CONTA -->
       <div id="mc-reg-body" style="display:none">
-        <input class="sheet-in" id="r-user" type="text" placeholder="Usuário" maxlength="80" autocomplete="username" onkeydown="if(event.key==='Enter')$('r-pass').focus()">
+        <input class="sheet-in" id="r-user" type="text" placeholder="Usuário (único)" maxlength="80" autocomplete="username" onkeydown="if(event.key==='Enter')$('r-email').focus()">
+        <input class="sheet-in" id="r-email" type="email" placeholder="E-mail (único)" maxlength="120" autocomplete="email" style="margin-top:8px" onkeydown="if(event.key==='Enter')$('r-pass').focus()">
         <input class="sheet-in" id="r-pass" type="password" placeholder="Senha (mín. 4 caracteres)" maxlength="80" autocomplete="new-password" style="margin-top:8px" onkeydown="if(event.key==='Enter')$('r-time').focus()">
         <input class="sheet-in" id="r-time" type="text" placeholder="Nome do seu time (opcional)" maxlength="80" style="margin-top:8px" onkeydown="if(event.key==='Enter')contaRegistrar()">
         <div class="sheet-a">
@@ -527,11 +556,35 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
           <button class="btn btn-primary btn-sm" onclick="contaRegistrar()">Criar conta</button>
         </div>
       </div>
+
+      <!-- REDEFINIR SENHA -->
+      <div id="mc-reset-body" style="display:none">
+        <!-- passo 1: pedir e-mail -->
+        <div id="mc-reset-p1">
+          <p style="font-size:13px;color:var(--txt2);margin-bottom:12px;line-height:1.6">Digite seu e-mail cadastrado. Enviaremos um código de redefinição.</p>
+          <input class="sheet-in" id="reset-email" type="email" placeholder="Seu e-mail" maxlength="120" onkeydown="if(event.key==='Enter')solicitarReset()">
+          <div class="sheet-a">
+            <button class="btn btn-secondary btn-sm" onclick="setContaTab('login')">Voltar</button>
+            <button class="btn btn-primary btn-sm" onclick="solicitarReset()">Enviar código</button>
+          </div>
+        </div>
+        <!-- passo 2: código + nova senha -->
+        <div id="mc-reset-p2" style="display:none">
+          <p style="font-size:13px;color:var(--txt2);margin-bottom:12px;line-height:1.6">Verifique seu e-mail e insira o código recebido com a nova senha.</p>
+          <input class="sheet-in" id="reset-token" type="text" placeholder="Código (6 dígitos)" maxlength="6" onkeydown="if(event.key==='Enter')$('reset-nova').focus()">
+          <input class="sheet-in" id="reset-nova" type="password" placeholder="Nova senha (mín. 4 caracteres)" maxlength="80" style="margin-top:8px" onkeydown="if(event.key==='Enter')confirmarReset()">
+          <div class="sheet-a">
+            <button class="btn btn-secondary btn-sm" onclick="$('mc-reset-p1').style.display='';$('mc-reset-p2').style.display='none'">Voltar</button>
+            <button class="btn btn-primary btn-sm" onclick="confirmarReset()">Redefinir senha</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- view: logado -->
+
+    <!-- VIEW: LOGADO -->
     <div id="mc-logado" style="display:none">
       <div class="sheet-t" id="mc-logado-nome">Minha Conta</div>
-      <div class="sheet-d">Gerencie suas preferências.</div>
+      <div class="sheet-d" id="mc-logado-email" style="font-size:12px;color:var(--txt2)"></div>
       <input class="sheet-in" id="c-nome-time" type="text" placeholder="Nome do seu time" maxlength="80">
       <div class="sheet-a" style="margin-top:10px">
         <button class="btn btn-amarelo btn-sm" onclick="contaSalvarTime()">Salvar nome</button>
@@ -539,6 +592,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <button class="btn btn-secondary btn-sm" onclick="irConta();fecharContaModal()" style="margin-top:8px">Ver histórico completo →</button>
     </div>
+
   </div>
 </div>
 
@@ -604,6 +658,7 @@ const S={
   xi:{},                 // key da posicao -> jogador escolhido
   comboAtual:null,       // {time_id, sigla, time_nome, decada} sorteado
   jogadorSel:null,       // jogador clicado aguardando posicionamento
+  moverDe:null,          // slot key de jogador já escalado sendo reposicionado
   rerollMax:2,           // re-giros permitidos (classico 2 / memoria 1)
   rerollUsados:0,        // re-giros ja usados
   girouNestaRodada:false,// se ja girou e ainda nao escolheu ninguem
@@ -901,18 +956,91 @@ function selecionarJogador(id){
   document.querySelector('.campo').scrollIntoView({behavior:'smooth',block:'center'});
 }
 
-// passo 2: clica no slot destacado -> posiciona
+// passo 2: clica no slot (alvo → posiciona / filled → entra em modo mover)
 function clicarSlot(k){
-  if(!S.jogadorSel)return;
   const slot=$('slot-'+k);
-  if(!slot.classList.contains('alvo'))return;
-  posicionar(k);
+
+  // --- modo "mover jogador já escalado" ---
+  if(S.moverDe){
+    if(k===S.moverDe){cancelarMover();return}          // clicou no mesmo → cancela
+    if(slot.classList.contains('alvo')){
+      moverJogador(S.moverDe,k);
+    } else if(slot.classList.contains('filled')){
+      // clicou em outro jogador escalado → troca de modo mover
+      cancelarMover();
+      iniciarMover(k);
+    }
+    return;
+  }
+
+  // --- colocando um novo jogador (S.jogadorSel ativo) ---
+  if(S.jogadorSel){
+    if(!slot.classList.contains('alvo'))return;
+    posicionar(k);
+    return;
+  }
+
+  // --- clicou num slot já preenchido → modo mover ---
+  if(slot.classList.contains('filled')){
+    iniciarMover(k);
+  }
+}
+
+function iniciarMover(k){
+  cancelarMover();
+  S.moverDe=k;
+  const jogador=S.xi[k];
+  if(!jogador)return;
+  // destaca o slot sendo movido
+  $('slot-'+k).classList.add('mover-origem');
+  // mostra slots vazios compatíveis com esse jogador
+  const posJog=jogador.posicao; // posição em que está
+  // pega todas as posições que o jogador original tinha (pode ter mais de uma)
+  const possiveis=jogador.posicoes||[posJog];
+  const alvos=[];
+  possiveis.forEach(p=>{
+    slotsVagosDaPosicao(p).forEach(sk=>{if(sk!==k)alvos.push(sk)});
+  });
+  // também mostra slots da MESMA posição do slot atual se vazio
+  slotsVagosDaPosicao(posJog).forEach(sk=>{if(!alvos.includes(sk)&&sk!==k)alvos.push(sk)});
+  if(alvos.length===0){toast('Não há vagas para mover '+nomeCurto(jogador.nome));cancelarMover();return}
+  alvos.forEach(sk=>$('slot-'+sk).classList.add('alvo'));
+  $('squad-vagas').textContent='Clique em uma posição para mover '+nomeCurto(jogador.nome)+'. Clique nele novamente para cancelar.';
+  document.querySelector('.campo').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function moverJogador(de,para){
+  const jogador=S.xi[de];
+  if(!jogador){cancelarMover();return}
+  const pDest=(FORMACAO.find(f=>f.k===para)||{}).p||jogador.posicao;
+  delete S.xi[de];
+  // limpa slot de origem visualmente
+  const slotDe=$('slot-'+de);
+  slotDe.classList.remove('filled','mover-origem','alvo');
+  slotDe.querySelector('.slot-ovr').textContent='';
+  slotDe.querySelector('.slot-nome').textContent='—';
+  // coloca no destino
+  S.xi[para]={...jogador,posicao:pDest};
+  marcarSlot(para,S.xi[para]);
+  cancelarMover();
+  atualizarProgresso();
+  toast(nomeCurto(jogador.nome)+' movido para '+pDest+'!');
+}
+
+function cancelarMover(){
+  if(S.moverDe){
+    const s=$('slot-'+S.moverDe);
+    if(s){s.classList.remove('mover-origem','alvo')}
+  }
+  S.moverDe=null;
+  limparAlvos();
+  $('squad-vagas').textContent='';
 }
 
 function posicionar(k){
   const j=S.jogadorSel;if(!j)return;
   const pSlot=(FORMACAO.find(f=>f.k===k)||{}).p || j.posicao;
-  S.xi[k]={id:j.id,nome:j.nome,nome_base:(j.nome_base||j.nome),posicao:pSlot,rating:j.rating,decada:j.decada,
+  S.xi[k]={id:j.id,nome:j.nome,nome_base:(j.nome_base||j.nome),posicao:pSlot,posicoes:j.posicoes||[pSlot],rating:j.rating,decada:j.decada,
            sigla:S.comboAtual.sigla,time_nome:S.comboAtual.time_nome,time_id:S.comboAtual.time_id};
   marcarSlot(k,S.xi[k]);
   adicionarLogDraft(pSlot,j);
@@ -999,7 +1127,7 @@ function montarAdversarios(){
 function iniciarCopa(){
   if(preenchidos()!==11){toast('Complete o XI primeiro!');return}
   const ovr=meuOVR();
-  const nomeTime=(S.conta&&S.conta.nome_time)?S.conta.nome_time:(S.nomeTimeCustom||'SEU TIME');
+  const nomeTime=(S.conta&&S.conta.nome_time&&S.conta.nome_time.trim())?S.conta.nome_time.trim():'Meu Time FC';
   C.meu={nome:nomeTime,label:nomeTime,ovr,eu:true};
   let advs=montarAdversarios();
   // embaralha
@@ -1364,7 +1492,7 @@ function atualizarUIconta(){
   if(u){
     hdr.textContent='👤 @'+u.usuario;
     chip.classList.add('logado');
-    label.textContent='@'+u.usuario+(u.nome_time&&u.nome_time!=='Meu Time'?' · '+u.nome_time:'');
+    label.textContent='@'+u.usuario+(u.nome_time&&u.nome_time.trim()?' · '+u.nome_time:'');
   }else{
     hdr.textContent='👤 Entrar';
     chip.classList.remove('logado');
@@ -1387,6 +1515,7 @@ function abrirContaModal(){
     $('mc-deslogado').style.display='none';
     $('mc-logado').style.display='block';
     $('mc-logado-nome').textContent='@'+S.conta.usuario;
+    $('mc-logado-email').textContent=S.conta.email||'';
     $('c-nome-time').value=S.conta.nome_time||'';
   }else{
     $('mc-deslogado').style.display='block';
@@ -1397,19 +1526,25 @@ function abrirContaModal(){
 }
 function fecharContaModal(){$('modal-conta').classList.remove('show')}
 function setContaTab(t){
-  $('tab-login-btn').classList.toggle('active',t==='login');
-  $('tab-reg-btn').classList.toggle('active',t==='reg');
+  ['login','reg','reset'].forEach(n=>{
+    $('tab-'+n+'-btn')?.classList.toggle('active',t===n);
+  });
   $('mc-login-body').style.display=t==='login'?'block':'none';
   $('mc-reg-body').style.display=t==='reg'?'block':'none';
+  $('mc-reset-body').style.display=t==='reset'?'block':'none';
 }
 
 async function contaRegistrar(){
-  const usuario=$('r-user').value.trim(), senha=$('r-pass').value;
+  const usuario=$('r-user').value.trim();
+  const email=$('r-email').value.trim();
+  const senha=$('r-pass').value;
   const nome_time=$('r-time').value.trim();
-  if(!usuario||!senha){toast('Preencha usuário e senha');return}
+  if(!usuario||!email||!senha){toast('Preencha usuário, e-mail e senha');return}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('E-mail inválido');return}
+  if(senha.length<4){toast('Senha deve ter ao menos 4 caracteres');return}
   load(true);
   try{
-    await api('conta_registrar','POST',{usuario,senha,nome_time});
+    await api('conta_registrar','POST',{usuario,email,senha,nome_time});
     toast('Conta criada! Bem-vindo, @'+usuario+'!');
     await contaStatus();
     fecharContaModal();
@@ -1417,14 +1552,43 @@ async function contaRegistrar(){
   load(false);
 }
 async function contaLogin(){
-  const usuario=$('c-user').value.trim(), senha=$('c-pass').value;
-  if(!usuario||!senha){toast('Preencha usuário e senha');return}
+  const login=$('c-user').value.trim(), senha=$('c-pass').value;
+  if(!login||!senha){toast('Preencha usuário/e-mail e senha');return}
   load(true);
   try{
-    await api('conta_login','POST',{usuario,senha});
-    toast('Bem-vindo de volta, @'+usuario+'!');
+    const d=await api('conta_login','POST',{login,senha});
+    toast('Bem-vindo de volta, @'+(d.usuario||login)+'!');
     await contaStatus();
     fecharContaModal();
+  }catch(e){toast(e.message)}
+  load(false);
+}
+
+async function solicitarReset(){
+  const email=$('reset-email').value.trim();
+  if(!email){toast('Digite seu e-mail');return}
+  load(true);
+  try{
+    await api('conta_reset_solicitar','POST',{email});
+    toast('Código enviado para '+email);
+    $('mc-reset-p1').style.display='none';
+    $('mc-reset-p2').style.display='';
+  }catch(e){toast(e.message)}
+  load(false);
+}
+async function confirmarReset(){
+  const email=$('reset-email').value.trim();
+  const token=$('reset-token').value.trim();
+  const nova_senha=$('reset-nova').value;
+  if(!token||!nova_senha){toast('Preencha o código e a nova senha');return}
+  if(nova_senha.length<4){toast('Senha deve ter ao menos 4 caracteres');return}
+  load(true);
+  try{
+    await api('conta_reset_confirmar','POST',{email,token,nova_senha});
+    toast('Senha redefinida! Faça login.');
+    setContaTab('login');
+    $('mc-reset-p1').style.display='';
+    $('mc-reset-p2').style.display='none';
   }catch(e){toast(e.message)}
   load(false);
 }

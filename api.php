@@ -47,11 +47,16 @@ function garantirTabelasConta(PDO $pdo): void {
         CREATE TABLE IF NOT EXISTS usuarios (
             id INT AUTO_INCREMENT PRIMARY KEY,
             usuario VARCHAR(80) NOT NULL UNIQUE,
+            email VARCHAR(120) NULL UNIQUE,
             senha_hash VARCHAR(255) NOT NULL,
             nome_time VARCHAR(80) NOT NULL DEFAULT 'Meu Time',
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
+    // Adiciona coluna email se tabela já existia sem ela
+    if (!hasColumn($pdo, 'usuarios', 'email')) {
+        $pdo->exec("ALTER TABLE usuarios ADD COLUMN email VARCHAR(120) NULL UNIQUE AFTER usuario");
+    }
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS partidas_usuario (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -67,12 +72,24 @@ function garantirTabelasConta(PDO $pdo): void {
             CONSTRAINT fk_partidas_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ");
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS reset_tokens (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            usuario_id INT NOT NULL,
+            token CHAR(6) NOT NULL,
+            expira_em DATETIME NOT NULL,
+            usado TINYINT(1) NOT NULL DEFAULT 0,
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_token (token),
+            CONSTRAINT fk_reset_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
 }
 
 function usuarioLogado(PDO $pdo): ?array {
     $id = intval($_SESSION['uid'] ?? 0);
     if (!$id) return null;
-    $st = $pdo->prepare("SELECT id, usuario, nome_time FROM usuarios WHERE id = ?");
+    $st = $pdo->prepare("SELECT id, usuario, email, nome_time FROM usuarios WHERE id = ?");
     $st->execute([$id]);
     $u = $st->fetch();
     return $u ?: null;
@@ -104,40 +121,108 @@ switch ($action) {
     case 'conta_registrar':
         if (!iniciarModuloConta($pdo)) break;
         $body = json_decode(file_get_contents('php://input'), true);
-        $usuario = substr(trim((string)($body['usuario'] ?? '')), 0, 80);
-        $senha = (string)($body['senha'] ?? '');
+        $usuario  = substr(trim((string)($body['usuario']   ?? '')), 0, 80);
+        $email    = strtolower(trim((string)($body['email'] ?? '')));
+        $senha    = (string)($body['senha'] ?? '');
         $nomeTime = substr(trim((string)($body['nome_time'] ?? 'Meu Time')), 0, 80);
-        if ($usuario === '' || strlen($senha) < 4) {
+        if ($usuario === '' || $email === '' || strlen($senha) < 4) {
             http_response_code(400);
-            echo json_encode(['erro' => 'Usuario e senha (min 4) sao obrigatorios']);
+            echo json_encode(['erro' => 'Usuário, e-mail e senha (mín. 4 caracteres) são obrigatórios']);
             break;
         }
-        $hash = password_hash($senha, PASSWORD_DEFAULT);
-        try {
-            $st = $pdo->prepare("INSERT INTO usuarios (usuario, senha_hash, nome_time) VALUES (?, ?, ?)");
-            $st->execute([$usuario, $hash, $nomeTime ?: 'Meu Time']);
-            $_SESSION['uid'] = intval($pdo->lastInsertId());
-            echo json_encode(['sucesso' => true]);
-        } catch (Throwable $e) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             http_response_code(400);
-            echo json_encode(['erro' => 'Usuario ja existe']);
+            echo json_encode(['erro' => 'E-mail inválido']);
+            break;
         }
+        // Verificar unicidade antes de inserir (mensagem mais clara)
+        $chkU = $pdo->prepare("SELECT 1 FROM usuarios WHERE usuario = ?");
+        $chkU->execute([$usuario]);
+        if ($chkU->fetch()) { http_response_code(400); echo json_encode(['erro' => 'Usuário já existe']); break; }
+        $chkE = $pdo->prepare("SELECT 1 FROM usuarios WHERE email = ?");
+        $chkE->execute([$email]);
+        if ($chkE->fetch()) { http_response_code(400); echo json_encode(['erro' => 'E-mail já cadastrado']); break; }
+        $hash = password_hash($senha, PASSWORD_DEFAULT);
+        $st = $pdo->prepare("INSERT INTO usuarios (usuario, email, senha_hash, nome_time) VALUES (?, ?, ?, ?)");
+        $st->execute([$usuario, $email, $hash, $nomeTime ?: 'Meu Time FC']);
+        $_SESSION['uid'] = intval($pdo->lastInsertId());
+        echo json_encode(['sucesso' => true]);
         break;
 
     case 'conta_login':
         if (!iniciarModuloConta($pdo)) break;
-        $body = json_decode(file_get_contents('php://input'), true);
-        $usuario = substr(trim((string)($body['usuario'] ?? '')), 0, 80);
+        $body  = json_decode(file_get_contents('php://input'), true);
+        $login = trim((string)($body['login'] ?? $body['usuario'] ?? ''));
         $senha = (string)($body['senha'] ?? '');
-        $st = $pdo->prepare("SELECT id, senha_hash FROM usuarios WHERE usuario = ?");
-        $st->execute([$usuario]);
+        // Aceita login por usuário OU e-mail
+        $isEmail = filter_var($login, FILTER_VALIDATE_EMAIL);
+        if ($isEmail) {
+            $st = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time FROM usuarios WHERE email = ?");
+        } else {
+            $st = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time FROM usuarios WHERE usuario = ?");
+        }
+        $st->execute([strtolower($login)]);
         $u = $st->fetch();
+        if (!$u) {
+            // tenta o outro campo como fallback
+            $st2 = $pdo->prepare("SELECT id, usuario, email, senha_hash, nome_time FROM usuarios WHERE usuario = ? OR email = ?");
+            $st2->execute([$login, strtolower($login)]);
+            $u = $st2->fetch();
+        }
         if (!$u || !password_verify($senha, (string)$u['senha_hash'])) {
             http_response_code(401);
-            echo json_encode(['erro' => 'Credenciais invalidas']);
+            echo json_encode(['erro' => 'Usuário/e-mail ou senha inválidos']);
             break;
         }
         $_SESSION['uid'] = intval($u['id']);
+        echo json_encode(['sucesso' => true, 'usuario' => $u['usuario']]);
+        break;
+
+    case 'conta_reset_solicitar':
+        if (!iniciarModuloConta($pdo)) break;
+        $body  = json_decode(file_get_contents('php://input'), true);
+        $email = strtolower(trim((string)($body['email'] ?? '')));
+        $st    = $pdo->prepare("SELECT id FROM usuarios WHERE email = ?");
+        $st->execute([$email]);
+        $u = $st->fetch();
+        if (!$u) {
+            // Não revelar se e-mail existe; responde sucesso mesmo assim
+            echo json_encode(['sucesso' => true]);
+            break;
+        }
+        $token = str_pad(strval(random_int(0, 999999)), 6, '0', STR_PAD_LEFT);
+        $expira = date('Y-m-d H:i:s', time() + 1800); // 30 min
+        $pdo->prepare("DELETE FROM reset_tokens WHERE usuario_id = ?")->execute([$u['id']]);
+        $pdo->prepare("INSERT INTO reset_tokens (usuario_id, token, expira_em) VALUES (?, ?, ?)")
+            ->execute([$u['id'], $token, $expira]);
+        // Envia e-mail
+        $assunto = '=?UTF-8?B?' . base64_encode('Redefinição de senha — Copa433') . '?=';
+        $msg     = "Seu código de redefinição de senha para o Copa433 é:\n\n$token\n\nVálido por 30 minutos. Se não solicitou, ignore este e-mail.";
+        $headers = "From: Copa433 <noreply@copa433.site>\r\nContent-Type: text/plain; charset=UTF-8";
+        @mail($email, $assunto, $msg, $headers);
+        echo json_encode(['sucesso' => true]);
+        break;
+
+    case 'conta_reset_confirmar':
+        if (!iniciarModuloConta($pdo)) break;
+        $body      = json_decode(file_get_contents('php://input'), true);
+        $email     = strtolower(trim((string)($body['email']     ?? '')));
+        $token     = trim((string)($body['token']     ?? ''));
+        $novaSenha = (string)($body['nova_senha'] ?? '');
+        if (strlen($novaSenha) < 4) { http_response_code(400); echo json_encode(['erro' => 'Senha muito curta']); break; }
+        $st = $pdo->prepare("
+            SELECT rt.id, rt.usuario_id
+            FROM reset_tokens rt
+            JOIN usuarios u ON u.id = rt.usuario_id
+            WHERE u.email = ? AND rt.token = ? AND rt.usado = 0 AND rt.expira_em > NOW()
+        ");
+        $st->execute([$email, $token]);
+        $row = $st->fetch();
+        if (!$row) { http_response_code(400); echo json_encode(['erro' => 'Código inválido ou expirado']); break; }
+        $pdo->prepare("UPDATE usuarios SET senha_hash = ? WHERE id = ?")
+            ->execute([password_hash($novaSenha, PASSWORD_DEFAULT), $row['usuario_id']]);
+        $pdo->prepare("UPDATE reset_tokens SET usado = 1 WHERE id = ?")
+            ->execute([$row['id']]);
         echo json_encode(['sucesso' => true]);
         break;
 
