@@ -213,6 +213,7 @@ body::before{
 /* ── CAMPO REALISTA ── */
 /* Formation + Tactic buttons */
 .form-btn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.5px;padding:5px 10px;border-radius:7px;border:1px solid var(--c3);background:var(--c2);color:var(--txt2);cursor:pointer;transition:.15s;flex:1;white-space:nowrap}
+.form-btn.bloqueado-form{opacity:.35;cursor:not-allowed;pointer-events:none}
 .form-btn:hover{border-color:var(--gold);color:var(--gold)}
 .form-btn.sel{background:var(--c3);border-color:var(--gold);color:var(--gold);font-weight:700}
 
@@ -1372,6 +1373,7 @@ const S={
   dificuldade:'facil',
   formacaoKey:'4-3-3',
   tatica:'neutro',
+  formacaoBloqueada:false,
   xi:{},
   comboAtual:null,
   jogadorSel:null,
@@ -1487,7 +1489,7 @@ function selDif(d){S.dificuldade=d;['facil','normal','dificil'].forEach(x=>$('di
 
 function mudarFormacao(key){
   if(!FORMACOES_DEF[key])return;
-  if(preenchidos()>0){toast('Formação não pode ser mudada após escalar jogadores');return;}
+  if(S.formacaoBloqueada){toast('Formação bloqueada após girar a roleta');return;}
   S.formacaoKey=key;
   FORMACAO=FORMACOES_DEF[key].slots;
   LINHAS=FORMACOES_DEF[key].linhas;
@@ -1556,7 +1558,8 @@ async function comecarDraft(){
     load(false);
   }
   S.xi={};S.comboAtual=null;S.jogadorSel=null;S.resultado=null;
-  S.rerollUsados=0;S.girouNestaRodada=false;S.rolando=false;
+  S.rerollUsados=0;S.girouNestaRodada=false;S.rolando=false;S.formacaoBloqueada=false;
+  document.querySelectorAll('.form-btn').forEach(b=>b.classList.remove('bloqueado-form'));
   const difMap={facil:3,normal:2,dificil:0};
   const baseReroll=(S.modo==='memoria')?1:2;
   S.rerollMax=S.dificuldade==='dificil'?0:(baseReroll + (S.dificuldade==='facil'?1:0));
@@ -1652,7 +1655,8 @@ function girarRoleta(){
 
   const alvo=combos[Math.floor(Math.random()*combos.length)];
 
-  S.rolando=true;S.girouNestaRodada=true;S.jogadorSel=null;
+  S.rolando=true;S.girouNestaRodada=true;S.jogadorSel=null;S.formacaoBloqueada=true;
+  document.querySelectorAll('.form-btn').forEach(b=>b.classList.add('bloqueado-form'));
   $('btn-girar').disabled=true;
   $('combo-result').classList.remove('show');
   $('escolha-lista').classList.remove('show');
@@ -1756,9 +1760,10 @@ function renderElenco(){
     if(!cheia)nDisp++;
     const sel=(S.jogadorSel&&S.jogadorSel.id===j.id)?'sel':'';
     const tier=j.rating>=90?'tier-gold':j.rating>=86?'tier-prata':j.rating>=80?'tier-bronze':j.rating>=75?'tier-cobre':'tier-fraco';
+    const ratCor=mem?'var(--c5)':ovrCor(j.rating);
     return `
     <div class="jitem ${mem?'memoria':''} ${cheia?'bloqueado':''} ${sel} ${tier}" ${cheia?'':`onclick="selecionarJogador(${j.id})"`}>
-      <div class="jrat">${mem?'?':j.rating}</div>
+      <div class="jrat" style="color:${ratCor}">${mem?'?':j.rating}</div>
       <div class="jinfo"><div class="jnome">${esc(j.nome)}</div><div class="jsub">${posTxt}${cheia?' · posições cheias':''}</div></div>
       <span class="jbadge">${esc(posicoesJogador(j).join('/'))}</span>
     </div>`;
