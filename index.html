@@ -541,7 +541,7 @@ body::before{
 .memoria .jrat{color:transparent!important;position:relative}
 .memoria .jrat::after{content:'?';color:var(--c5);position:absolute;left:8px;font-size:24px;top:0}
 .jinfo{flex:1;min-width:0}
-.jnome{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt)}
+.jnome{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt);text-transform:uppercase}
 .jsub{font-size:11px;color:var(--txt2);margin-top:2px;font-family:'Barlow Condensed',sans-serif}
 .jbadge{
   font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;
@@ -2292,8 +2292,8 @@ function proximoJogo(){
 }
 
 function mostrarJogo(J){
-  $('m-home-name').textContent=J.home.label;
-  $('m-away-name').textContent=J.away.label;
+  $('m-home-name').textContent=J.home.label.toUpperCase();
+  $('m-away-name').textContent=J.away.label.toUpperCase();
   $('m-home-ovr').textContent='OVR '+J.home.ovr;
   $('m-away-ovr').textContent='OVR '+J.away.ovr;
   const lgH=logoDoTime(J.home.nome||J.home.label);
@@ -2493,7 +2493,7 @@ function renderCopa(){
         const hc=done?(j.venc===j.home?'win':'lose'):(j.home&&j.home.eu?'eu':'');
         const ac=done?(j.venc===j.away?'win':'lose'):(j.away&&j.away.eu?'eu':'');
         const sc=done?`${j.g1}-${j.g2}`+(j.pen?` (${j.pen1}-${j.pen2}p)`:''):'—';
-        return `<div class="bracket-jogo"><span class="bj-t ${hc}">${esc(j.home?j.home.label:'?')}</span><span class="bj-s">${sc}</span><span class="bj-t ${ac}" style="text-align:right">${esc(j.away?j.away.label:'?')}</span></div>`;
+        return `<div class="bracket-jogo"><span class="bj-t ${hc}">${esc(j.home?j.home.label.toUpperCase():'?')}</span><span class="bj-s">${sc}</span><span class="bj-t ${ac}" style="text-align:right">${esc(j.away?j.away.label.toUpperCase():'?')}</span></div>`;
       }).join('');
       return `<div class="bracket-fase"><div class="bracket-fase-t">${FASE_NOME[f]}</div>${linhas}</div>`;
     }).join('')+'</div>';
