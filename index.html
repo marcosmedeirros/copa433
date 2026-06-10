@@ -268,89 +268,173 @@ body::before{
 .form-linha:last-child{margin-bottom:0}
 
 /* ── PLAYER SLOTS — FIFA inspired ── */
-.slot{display:flex;flex-direction:column;align-items:center;gap:4px;width:60px;cursor:default}
+.slot{display:flex;flex-direction:column;align-items:center;gap:5px;width:62px;cursor:default}
+/* Empty slot — circular outline */
 .slot-c{
-  width:40px;height:40px;border-radius:10px;
-  background:rgba(0,0,0,.5);
-  border:1.5px dashed rgba(255,255,255,.2);
+  width:42px;height:42px;
+  border-radius:50%;
+  background:rgba(0,0,0,.38);
+  border:2px dashed rgba(255,255,255,.2);
   display:flex;align-items:center;justify-content:center;
-  transition:.35s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden;
+  transition:.35s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;
+  box-shadow:inset 0 0 10px rgba(0,0,0,.3);
 }
-.slot-c::before{content:'';position:absolute;inset:0;background:linear-gradient(145deg,rgba(255,255,255,.06),transparent);pointer-events:none}
+/* Filled slot — FIFA card circle */
 .slot.filled .slot-c{
-  background:linear-gradient(145deg,#0A4820,#0E6530);
-  border:2px solid rgba(255,255,255,.75);
-  width:46px;height:46px;
-  box-shadow:0 0 18px rgba(0,180,90,.5),0 4px 14px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.2);
-  cursor:pointer;border-radius:12px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#1A7A40,#0A4820 70%);
+  border:2.5px solid rgba(255,255,255,.85);
+  width:50px;height:50px;
+  box-shadow:
+    0 0 0 3px rgba(255,255,255,.12),
+    0 0 22px rgba(0,200,100,.55),
+    0 5px 16px rgba(0,0,0,.7),
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -1px 0 rgba(0,0,0,.3);
+  cursor:pointer;
 }
-.slot-abbr{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.5px}
+/* Shine on filled */
+.slot.filled .slot-c::after{
+  content:'';
+  position:absolute;top:2px;left:2px;right:2px;
+  height:45%;border-radius:50% 50% 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent);
+  pointer-events:none;
+}
+.slot-abbr{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:700;
+  color:rgba(255,255,255,.4);
+  letter-spacing:.5px;
+  text-transform:uppercase;
+}
 .slot.filled .slot-abbr{display:none}
-.slot-ovr{display:none;font-family:'Bebas Neue',sans-serif;font-size:19px;color:rgba(255,255,255,.95);line-height:1;letter-spacing:.5px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.slot-ovr{
+  display:none;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:20px;
+  color:#fff;
+  line-height:1;
+  letter-spacing:.5px;
+  text-shadow:0 1px 4px rgba(0,0,0,.7);
+}
 .slot.filled .slot-ovr{display:block}
-.slot-nome{font-family:'Barlow Condensed',sans-serif;font-size:9px;color:rgba(255,255,255,.4);text-align:center;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.15}
-.slot.filled .slot-nome{color:rgba(255,255,255,.9);font-weight:700;font-size:10px}
+.slot-nome{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;color:rgba(255,255,255,.38);
+  text-align:center;max-width:62px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.15;
+}
+.slot.filled .slot-nome{
+  color:rgba(255,255,255,.92);font-weight:700;font-size:10px;
+  text-shadow:0 1px 3px rgba(0,0,0,.8);
+}
+/* Alvo (target) — gold pulse */
 .slot.alvo{cursor:pointer}
 .slot.alvo .slot-c{
-  border-color:var(--gold);border-style:solid;background:rgba(200,168,75,.15);
-  box-shadow:0 0 0 4px rgba(200,168,75,.15),0 0 24px rgba(200,168,75,.5);
+  border-color:var(--gold);border-style:solid;
+  background:radial-gradient(circle at 40% 35%,rgba(200,168,75,.25),rgba(200,168,75,.08));
+  box-shadow:0 0 0 4px rgba(200,168,75,.14),0 0 26px rgba(200,168,75,.55);
   animation:pulse 1.4s ease infinite;
 }
 .slot.alvo .slot-abbr{color:var(--gold)}
 @keyframes pulse{
   0%,100%{box-shadow:0 0 0 3px rgba(200,168,75,.12),0 0 14px rgba(200,168,75,.4)}
-  50%{box-shadow:0 0 0 7px rgba(200,168,75,.06),0 0 30px rgba(200,168,75,.65)}
+  50%{box-shadow:0 0 0 8px rgba(200,168,75,.06),0 0 32px rgba(200,168,75,.68)}
 }
+/* Move origin — orange */
 .slot.mover-origem .slot-c{
-  border-color:#ff8c00;border-style:solid;background:rgba(255,140,0,.2);
-  box-shadow:0 0 0 4px rgba(255,140,0,.15),0 0 20px rgba(255,140,0,.4);
+  border-color:#ff8c00;border-style:solid;
+  background:radial-gradient(circle,rgba(255,140,0,.2),rgba(255,140,0,.05));
+  box-shadow:0 0 0 4px rgba(255,140,0,.15),0 0 22px rgba(255,140,0,.45);
   animation:pulseMov 1s ease infinite;cursor:pointer;
 }
 @keyframes pulseMov{
-  0%,100%{box-shadow:0 0 0 3px rgba(255,140,0,.15),0 0 14px rgba(255,140,0,.3)}
-  50%{box-shadow:0 0 0 6px rgba(255,140,0,.08),0 0 28px rgba(255,140,0,.52)}
+  0%,100%{box-shadow:0 0 0 3px rgba(255,140,0,.14),0 0 14px rgba(255,140,0,.3)}
+  50%{box-shadow:0 0 0 6px rgba(255,140,0,.07),0 0 28px rgba(255,140,0,.55)}
 }
 @media(min-width:900px){
-  .slot{width:76px}
-  .slot-c{width:46px;height:46px;border-radius:12px}
-  .slot.filled .slot-c{width:54px;height:54px;border-radius:14px}
-  .slot-nome{font-size:11px;max-width:76px}
+  .slot{width:78px}
+  .slot-c{width:46px;height:46px}
+  .slot.filled .slot-c{width:56px;height:56px}
+  .slot-nome{font-size:11px;max-width:78px}
   .slot-ovr{font-size:22px}
 }
 
 /* ── ROLETA ── */
 .roleta-box{
-  background:linear-gradient(180deg,var(--c1),var(--c2));
-  border-radius:var(--r);border:1px solid rgba(255,255,255,.07);
-  padding:22px 16px 18px;margin-bottom:14px;box-shadow:var(--shadow);
+  background:linear-gradient(160deg,var(--c1) 0%,var(--c2) 50%,var(--c1) 100%);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  padding:24px 18px 20px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.05);
   position:relative;overflow:hidden;
 }
+/* Gold top line */
 .roleta-box::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.55;
+  background:linear-gradient(90deg,transparent 5%,var(--gold) 40%,var(--gold-l) 50%,var(--gold) 60%,transparent 95%);
+  opacity:.7;
 }
-.roleta-pos-t{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3.5px;color:var(--txt2);text-transform:uppercase;margin-bottom:4px}
+/* Subtle corner glow */
+.roleta-box::after{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:60%;height:80px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(200,168,75,.06),transparent 70%);
+  pointer-events:none;
+}
+.roleta-pos-t{
+  text-align:center;font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;letter-spacing:4px;color:var(--txt3);
+  text-transform:uppercase;margin-bottom:4px;
+}
 .roleta-pos-n{
-  text-align:center;font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:3px;margin-bottom:18px;line-height:1;
+  text-align:center;font-family:'Bebas Neue',sans-serif;
+  font-size:36px;letter-spacing:4px;margin-bottom:18px;line-height:1;
   color:var(--gold);
-  text-shadow:0 0 22px rgba(200,168,75,.5);
+  text-shadow:0 0 28px rgba(200,168,75,.55),0 0 60px rgba(200,168,75,.15);
 }
-.roleta-windows{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
-.rw{background:rgba(0,0,0,.55);border-radius:12px;border:1px solid rgba(255,255,255,.08);overflow:hidden;position:relative}
+.roleta-windows{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.rw{
+  background:rgba(0,0,0,.65);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.07);
+  overflow:hidden;position:relative;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.4);
+}
+/* Selection highlight bar */
 .rw::before{
   content:'';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
-  height:64px;background:rgba(200,168,75,.04);
-  border-top:1px solid rgba(200,168,75,.15);border-bottom:1px solid rgba(200,168,75,.15);
+  height:68px;
+  background:linear-gradient(135deg,rgba(200,168,75,.06),rgba(200,168,75,.02));
+  border-top:1px solid rgba(200,168,75,.2);
+  border-bottom:1px solid rgba(200,168,75,.2);
   z-index:3;pointer-events:none;
 }
-.rw-l{font-family:'Barlow Condensed',sans-serif;font-size:9px;letter-spacing:2.5px;color:var(--txt3);text-transform:uppercase;padding:7px 10px 5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02)}
-.rw-win{height:64px;overflow:hidden;position:relative}
+.rw-l{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:9px;letter-spacing:3px;color:var(--txt3);
+  text-transform:uppercase;
+  padding:8px 10px 6px;text-align:center;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  background:rgba(255,255,255,.025);
+  letter-spacing:2.5px;
+}
+.rw-win{height:68px;overflow:hidden;position:relative}
 .rw-strip{position:absolute;left:0;right:0;top:0;will-change:transform;z-index:2}
-.rw-cell{height:64px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;text-align:center;padding:0 6px;line-height:1;color:var(--txt)}
-.rw-win::before,.rw-win::after{content:'';position:absolute;left:0;right:0;height:22px;z-index:4;pointer-events:none}
-.rw-win::before{top:0;background:linear-gradient(rgba(0,0,0,.85),transparent)}
-.rw-win::after{bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.85))}
-@media(min-width:900px){.rw-cell{font-size:26px}}
+.rw-cell{
+  height:68px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:24px;
+  letter-spacing:1.5px;text-align:center;
+  padding:0 8px;line-height:1;color:var(--txt);
+}
+.rw-win::before,.rw-win::after{content:'';position:absolute;left:0;right:0;height:24px;z-index:4;pointer-events:none}
+.rw-win::before{top:0;background:linear-gradient(rgba(0,0,0,.9),transparent)}
+.rw-win::after{bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.9))}
+@media(min-width:900px){.rw-cell{font-size:28px}}
 
 /* ── FIFA-STYLE PLAYER CARDS ── */
 .combo-result{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--txt);margin:14px 0 4px;min-height:22px;opacity:0;transition:opacity .35s;letter-spacing:.3px}
@@ -440,12 +524,36 @@ body::before{
 .draft-log{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .log-item{
   display:flex;align-items:center;gap:10px;
-  background:var(--c1);border-radius:10px;padding:10px 14px;
-  border:1px solid rgba(255,255,255,.055);animation:fadeUp .3s ease both;
+  background:linear-gradient(135deg,var(--c2),var(--c1));
+  border-radius:12px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,.07);
+  border-left:3px solid var(--verde);
+  animation:fadeUp .3s ease both;
+  box-shadow:0 2px 12px rgba(0,0,0,.35);
 }
-.log-pos{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;background:rgba(0,230,118,.1);color:var(--verde);padding:3px 9px;border-radius:20px;letter-spacing:.5px;white-space:nowrap;border:1px solid rgba(0,230,118,.18)}
-.log-nome{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.log-era{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--txt2);white-space:nowrap}
+.log-pos{
+  font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;
+  background:rgba(0,230,118,.12);color:var(--verde);
+  padding:4px 9px;border-radius:20px;
+  letter-spacing:.5px;white-space:nowrap;
+  border:1px solid rgba(0,230,118,.22);
+  min-width:32px;text-align:center;
+}
+.log-nome{
+  flex:1;font-family:'Barlow Condensed',sans-serif;
+  font-size:14px;font-weight:700;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:var(--txt);
+}
+.log-era{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:13px;
+  color:var(--gold);
+  white-space:nowrap;
+  letter-spacing:.5px;
+  opacity:.8;
+}
 
 /* ── COPA ── */
 #screen-copa{padding:0 16px 30px}
@@ -1230,35 +1338,56 @@ function nomeCurto(nome){
 function chaveJogador(j){return (j.nome_base||j.nome||'').toLowerCase();}
 function posicoesJogador(j){return (j.posicoes&&j.posicoes.length)?j.posicoes:[j.posicao];}
 const LOGO_MAP = [
-  [['atletico','mineiro','atleticomineiro','galo'],          'atleticomineiro.png'],
-  [['atletico','nacional','atleticonacional'],               'atleticonacional.png'],
+  [['ajax'],                                                 'ajax.png'],
+  [['arsenal'],                                              'arsenal.png'],
+  [['atletico mineiro','atleticomineiro','galo'],            'atleticomineiro.png'],
+  [['atletico nacional','atleticonacional'],                 'atleticonacional.png'],
   [['bahia'],                                                'bahia.png'],
   [['barcelona','barca'],                                    'barcelona.png'],
-  [['bayern','munique','munich'],                            'bayern.png'],
+  [['bayer','leverkusen','bayerleverkusen'],                 'bayerleverkusen.png'],
+  [['bayern','munique','munich','bayernmunchen'],            'bayernmunchen.png'],
+  [['benfica'],                                              'benfica.png'],
   [['boca','juniors','bocajuniors'],                         'bocajuniors.png'],
   [['botafogo'],                                             'botafogo.png'],
+  [['celtic'],                                               'celtic.png'],
   [['chelsea'],                                              'chelsea.png'],
   [['colo','colo','colocolo'],                               'colocolo.png'],
+  [['corinthians'],                                          'corinthians.png'],
   [['coritiba'],                                             'coritiba.png'],
+  [['cruzeiro'],                                             'cruzeiro.png'],
   [['dortmund','borussia'],                                  'dortmund.png'],
+  [['estudiantes'],                                          'estudiantes.png'],
   [['estrela','vermelha','estrelavermelha','red star'],      'estrelavermelha.png'],
+  [['flamengo'],                                             'flamengo.png'],
   [['fluminense'],                                           'fluminense.png'],
+  [['forest','nottingham'],                                  'forest.png'],
   [['gremio','grêmio'],                                      'gremio.png'],
+  [['guarani'],                                              'guarani.png'],
   [['independiente'],                                        'independiente.png'],
   [['inter','milao','internazionale','intermilao'],          'intermilao.png'],
   [['juventus'],                                             'juventus.png'],
+  [['ldu','liga deportiva'],                                 'ldu.png'],
+  [['leicester'],                                            'leicester.png'],
   [['liverpool'],                                            'liverpool.png'],
-  [['manchester','united','manchesterunited'],               'manchesterunited.png'],
+  [['manchester city','manchestercity'],                     'manchestercity.png'],
+  [['manchester united','manchesterunited'],                 'manchesterunited.png'],
   [['marseille','olympique','marsella'],                     'marseille.png'],
   [['milan','ac milan'],                                     'milan.png'],
+  [['napoli'],                                               'napoli.png'],
   [['nacional'],                                             'nacional.png'],
+  [['olimpia'],                                              'olimpia.png'],
   [['once','caldas','oncecaldas'],                           'oncecaldas.png'],
-  [['palmeiras'],                                            'palmeiras.webp'],
+  [['palmeiras'],                                            'palmeiras.png'],
+  [['penarol','peñarol'],                                    'penarol.png'],
   [['porto','fc porto'],                                     'porto.png'],
   [['real madrid','realmadrid'],                             'realmadrid.png'],
   [['river','plate','riverplate'],                           'riverplate.png'],
+  [['san lorenzo','sanlorenzo'],                             'sanlorenzo.png'],
   [['santos'],                                               'santos.png'],
+  [['sao paulo','são paulo','saopaulo'],                     'saopaulo.png'],
   [['steaua','bucareste'],                                   'steaua.png'],
+  [['universidad de chile','universidadedechile'],           'universidadedechile.png'],
+  [['vasco'],                                                'vasco.png'],
   [['velez','sarsfield'],                                    'velez.png'],
 ];
 function logoDoTime(nome){
