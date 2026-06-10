@@ -951,6 +951,26 @@ body::before{
     <div style="margin-top:12px"><button class="btn btn-primary btn-sm" onclick="abrirContaModal()">Entrar / Criar conta</button></div>
   </div>
   <div id="conta-logado-area" style="display:none">
+    <!-- Edição de perfil -->
+    <div class="grupo-box" style="margin-bottom:14px">
+      <div class="grupo-t">Perfil · <span id="mc-logado-nome" style="color:var(--verde)"></span></div>
+      <div style="font-size:12px;color:var(--txt2);margin-bottom:12px" id="mc-logado-email"></div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+        <div id="escudo-preview" style="width:64px;height:64px;border-radius:50%;background:var(--c3);border:2px dashed var(--c4);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="$('escudo-input').click()" title="Trocar escudo">🛡️</div>
+        <div style="flex:1">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;margin-bottom:4px">Escudo do Time</div>
+          <div style="font-size:11px;color:var(--txt2);line-height:1.5">Clique no escudo para enviar uma imagem (PNG/JPG).</div>
+          <button class="btn btn-secondary btn-sm" onclick="$('escudo-input').click()" style="margin-top:6px;width:auto;padding:6px 14px;font-size:12px">📁 Escolher imagem</button>
+        </div>
+      </div>
+      <input type="file" id="escudo-input" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="display:none" onchange="escudoFileChanged(this)">
+      <input class="sheet-in" id="c-nome-time" type="text" placeholder="Nome do seu time" maxlength="80" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-amarelo btn-sm" onclick="contaSalvarTime()" style="flex:1">💾 Salvar</button>
+        <button class="btn btn-secondary btn-sm" onclick="contaLogout()">Sair da conta</button>
+      </div>
+    </div>
+
     <div class="grupo-box">
       <div class="grupo-t">Resumo · <span id="conta-nome-exib" style="color:var(--verde)"></span></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
@@ -1174,6 +1194,7 @@ body::before{
       <div id="mc-login-body">
         <input class="sheet-in" id="c-user" type="text" placeholder="Usuário ou e-mail" maxlength="120" autocomplete="username" onkeydown="if(event.key==='Enter')$('c-pass').focus()">
         <input class="sheet-in" id="c-pass" type="password" placeholder="Senha" maxlength="80" autocomplete="current-password" style="margin-top:8px" onkeydown="if(event.key==='Enter')contaLogin()">
+        <div id="mc-login-error" style="display:none;color:#E74C3C;font-family:'Barlow Condensed',sans-serif;font-size:13px;margin-top:8px;padding:8px 12px;background:rgba(231,76,60,.1);border-radius:8px;border:1px solid rgba(231,76,60,.25);text-align:center"></div>
         <div class="sheet-a">
           <button class="btn btn-secondary btn-sm" onclick="fecharContaModal()">Cancelar</button>
           <button class="btn btn-primary btn-sm" onclick="contaLogin()">Entrar</button>
@@ -1209,25 +1230,7 @@ body::before{
         </div>
       </div>
     </div>
-    <div id="mc-logado" style="display:none">
-      <div class="sheet-t" id="mc-logado-nome">Minha Conta</div>
-      <div class="sheet-d" id="mc-logado-email" style="font-size:12px;color:var(--txt2)"></div>
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
-        <div id="escudo-preview" style="width:64px;height:64px;border-radius:50%;background:var(--c3);border:2px dashed var(--c4);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;cursor:pointer;flex-shrink:0" onclick="$('escudo-input').click()" title="Trocar escudo">🛡️</div>
-        <div style="flex:1">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;margin-bottom:4px">Escudo do Time</div>
-          <div style="font-size:11px;color:var(--txt2);line-height:1.5">Clique no escudo para enviar uma imagem (PNG/JPG). Aparece na tela de partida.</div>
-          <button class="btn btn-secondary btn-sm" onclick="$('escudo-input').click()" style="margin-top:6px;width:auto;padding:6px 14px;font-size:12px">📁 Escolher imagem</button>
-        </div>
-      </div>
-      <input type="file" id="escudo-input" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="display:none" onchange="escudoFileChanged(this)">
-      <input class="sheet-in" id="c-nome-time" type="text" placeholder="Nome do seu time" maxlength="80">
-      <div class="sheet-a" style="margin-top:10px">
-        <button class="btn btn-amarelo btn-sm" onclick="contaSalvarTime()">💾 Salvar</button>
-        <button class="btn btn-secondary btn-sm" onclick="contaLogout()">Sair</button>
-      </div>
-      <button class="btn btn-secondary btn-sm" onclick="irConta();fecharContaModal()" style="margin-top:8px">Ver histórico completo →</button>
-    </div>
+    <div id="mc-logado" style="display:none"></div>
   </div>
 </div>
 
@@ -1506,7 +1509,16 @@ function mudarFormacao(key){
 }
 function mudarTatica(v){S.tatica=v;}
 function irHome(){tela('home')}
-function irConta(){tela('conta');carregarHistoricoConta()}
+function irConta(){
+  tela('conta');
+  if(S.conta){
+    $('mc-logado-nome').textContent='@'+S.conta.usuario;
+    $('mc-logado-email').textContent=S.conta.email||'';
+    if($('c-nome-time'))$('c-nome-time').value=S.conta.nome_time||'';
+    _renderEscudo();
+  }
+  carregarHistoricoConta();
+}
 async function irRanking(){
   tela('ranking');
   $('rk-loading').style.display='block';
@@ -1927,7 +1939,7 @@ function atualizarProgresso(){
 // ===== COPA433 =====
 const C={meu:null,adversarios:[],grupo:[],meusJogosGrupo:[],outrosJogosGrupo:[],idxGrupo:0,
          fase:'grupos',mata:{},rodadaMata:null,jogoAtual:null,campanha:[],
-         golsMarcados:0,golsSofridos:0,jogosCopa:0};
+         golsMarcados:0,golsSofridos:0,jogosCopa:0,vitorias:0};
 
 function renderOutrosResultados(lista){
   const box=$('outros-box');
@@ -2001,7 +2013,7 @@ function iniciarCopa(){
   C.idxGrupo=0;
   C.fase='grupos';
   C.campanha=[];
-  C.golsMarcados=0;C.golsSofridos=0;C.jogosCopa=0;
+  C.golsMarcados=0;C.golsSofridos=0;C.jogosCopa=0;C.vitorias=0;
   C.poolMata=escolhidos.slice(3);
 
   tela('copa');
@@ -2050,8 +2062,8 @@ function jogarGrupo(){
   const r=simularJogo(J.home.ovr,J.away.ovr);
   J.g1=r.g1;J.g2=r.g2;J.done=true;
   C.jogosCopa++;
-  if(J.home.eu){C.golsMarcados+=r.g1;C.golsSofridos+=r.g2;}
-  else{C.golsMarcados+=r.g2;C.golsSofridos+=r.g1;}
+  if(J.home.eu){C.golsMarcados+=r.g1;C.golsSofridos+=r.g2;if(r.g1>r.g2)C.vitorias++;}
+  else{C.golsMarcados+=r.g2;C.golsSofridos+=r.g1;if(r.g2>r.g1)C.vitorias++;}
   const h=J.home,a=J.away;
   h.P++;a.P++;h.GP+=r.g1;h.GC+=r.g2;a.GP+=r.g2;a.GC+=r.g1;
   if(r.g1>r.g2){h.V++;a.D++;}
@@ -2070,7 +2082,9 @@ function jogarGrupo(){
     outrosLista=[{t1:t1.label,g1:rx.g1,t2:t2.label,g2:rx.g2}];
   }
   animarPlacar(J,()=>{
-    renderOutrosResultados(outrosLista);
+    const euPerdeuGrupo=J.home.eu?(r.g1<r.g2):(r.g2<r.g1);
+    if(!euPerdeuGrupo) renderOutrosResultados(outrosLista);
+    else renderOutrosResultados([]);
     renderCopa();
     C.idxGrupo++;
     // auto-avança para próximo jogo
@@ -2170,9 +2184,11 @@ function jogarMata(){
     .filter(j=>j.done && !j.home.eu && !j.away.eu)
     .map(j=>({t1:j.home.label,g1:j.g1,t2:j.away.label,g2:j.g2,pen:j.pen,pen1:j.pen1,pen2:j.pen2}));
   animarPlacar(J,()=>{
-    renderOutrosResultados(outrosLista);
-    renderCopa();
     const euPerdeu = (J.home.eu||J.away.eu) && !venc.eu;
+    if(venc.eu) C.vitorias++;
+    if(!euPerdeu) renderOutrosResultados(outrosLista);
+    else renderOutrosResultados([]);
+    renderCopa();
     const sc=`${J.g1}–${J.g2}${J.pen?` (${J.pen1}–${J.pen2}p)`:''}`;
     const opp=(J.home.eu?J.away:J.home).label;
     if(euPerdeu){
@@ -2473,15 +2489,39 @@ function compartilharResultado(){
   const r=S.resultadoCopa;
   if(!r)return;
   const nomeTime=S.conta?.nome_time||'Meu Time FC';
-  const emoji=r.campeao?'🏆':'❌';
-  const texto=r.campeao
-    ? `${emoji} ${nomeTime} é CAMPEÃO da Copa433! OVR ${r.ovr} | Copa433 — monte seu dream team histórico!`
-    : `${emoji} ${nomeTime} chegou até ${r.msg} na Copa433! OVR ${r.ovr} | Copa433 — tente você também!`;
-  if(navigator.share){
-    navigator.share({title:'Copa433', text:texto, url:location.href}).catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(texto).then(()=>mostrarToast('Resultado copiado!')).catch(()=>mostrarToast(texto));
+
+  // escalação ordenada por linha (GOL → DEF → MEI → ATA)
+  const ordemPos=['GOL','LAT','ZAG','VOL','MEI','ALA','PO','CA','SE'];
+  const xi=Object.values(S.xi).sort((a,b)=>{
+    const ai=ordemPos.indexOf(a.posicao),bi=ordemPos.indexOf(b.posicao);
+    return (ai<0?99:ai)-(bi<0?99:bi);
+  });
+  const linhaXI=xi.map(j=>{
+    const nm=nomeCurto(j.nome).toUpperCase();
+    const era=j.decada;
+    return `${j.posicao} ${nm} ${j.time_nome}/${era}`;
+  }).join('\n');
+
+  const linhas=[];
+  linhas.push(r.campeao?`🏆 CAMPEÃO — ${nomeTime}`:`❌ ${nomeTime} — ${r.msg}`);
+  linhas.push('');
+  linhas.push(linhaXI);
+  if(r.campeao){
+    linhas.push('');
+    const vit=C.vitorias||0;
+    const gp=C.golsMarcados||0, gc=C.golsSofridos||0;
+    linhas.push(`${vit}V | ${gp} GP | ${gc} GC | OVR ${r.ovr}`);
   }
+  linhas.push('');
+  linhas.push('copa433.site');
+
+  const texto=linhas.join('\n');
+  navigator.clipboard.writeText(texto)
+    .then(()=>mostrarToast('Time copiado! Cole onde quiser 📋'))
+    .catch(()=>{
+      if(navigator.share) navigator.share({title:'Copa433',text:texto,url:'https://copa433.site'}).catch(()=>{});
+      else mostrarToast(texto);
+    });
 }
 
 function mostrarToast(msg){
@@ -2513,18 +2553,12 @@ async function contaStatus(){
 }
 
 function abrirContaModal(){
-  if(S.conta){
-    $('mc-deslogado').style.display='none';
-    $('mc-logado').style.display='block';
-    $('mc-logado-nome').textContent='@'+S.conta.usuario;
-    $('mc-logado-email').textContent=S.conta.email||'';
-    $('c-nome-time').value=S.conta.nome_time||'';
-    _renderEscudo();
-  }else{
-    $('mc-deslogado').style.display='block';
-    $('mc-logado').style.display='none';
-    setContaTab('login');
-  }
+  if(S.conta){ irConta(); return; }
+  $('mc-deslogado').style.display='block';
+  $('mc-logado').style.display='none';
+  setContaTab('login');
+  $('mc-login-error').style.display='none';
+  $('mc-login-error').textContent='';
   $('modal-conta').classList.add('show');
 }
 function fecharContaModal(){$('modal-conta').classList.remove('show')}
@@ -2556,14 +2590,16 @@ async function contaRegistrar(){
 }
 async function contaLogin(){
   const login=$('c-user').value.trim(), senha=$('c-pass').value;
-  if(!login||!senha){toast('Preencha usuário/e-mail e senha');return}
+  const errEl=$('mc-login-error');
+  if(!login||!senha){errEl.textContent='Preencha usuário/e-mail e senha';errEl.style.display='block';return}
+  errEl.style.display='none';
   load(true);
   try{
     const d=await api('conta_login','POST',{login,senha});
     toast('Bem-vindo de volta, @'+(d.usuario||login)+'!');
     await contaStatus();
     fecharContaModal();
-  }catch(e){toast(e.message)}
+  }catch(e){errEl.textContent=e.message;errEl.style.display='block';}
   load(false);
 }
 
