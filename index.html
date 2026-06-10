@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>COPA433 — Draft de Times Históricos</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -210,6 +211,11 @@ body::before{
 @media(min-width:900px){.draft-top{padding:22px 2px 18px}.draft-count{font-size:46px}}
 
 /* ── CAMPO REALISTA ── */
+/* Formation + Tactic buttons */
+.form-btn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.5px;padding:5px 10px;border-radius:7px;border:1px solid var(--c3);background:var(--c2);color:var(--txt2);cursor:pointer;transition:.15s;flex:1;white-space:nowrap}
+.form-btn:hover{border-color:var(--gold);color:var(--gold)}
+.form-btn.sel{background:var(--c3);border-color:var(--gold);color:var(--gold);font-weight:700}
+
 .campo{
   position:relative;border-radius:16px;
   padding:14px 10px 12px;margin-bottom:14px;
@@ -313,11 +319,10 @@ body::before{
 .slot-ovr{
   display:none;
   font-family:'Bebas Neue',sans-serif;
-  font-size:20px;
-  color:#fff;
+  font-size:15px;
   line-height:1;
   letter-spacing:.5px;
-  text-shadow:0 1px 4px rgba(0,0,0,.7);
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
 }
 .slot.filled .slot-ovr{display:block}
 .slot-nome{
@@ -327,8 +332,8 @@ body::before{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.15;
 }
 .slot.filled .slot-nome{
-  color:rgba(255,255,255,.92);font-weight:700;font-size:10px;
-  text-shadow:0 1px 3px rgba(0,0,0,.8);
+  color:rgba(255,255,255,.98);font-weight:700;font-size:12px;
+  text-shadow:0 1px 4px rgba(0,0,0,.9);letter-spacing:.2px;
 }
 /* Alvo (target) — gold pulse */
 .slot.alvo{cursor:pointer}
@@ -1005,9 +1010,33 @@ body::before{
     </div>
     <div class="draft-count"><span id="draft-n">0</span><span>/11</span></div>
   </div>
+  <div id="box-score-bar" style="display:none;background:var(--c1);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;margin-bottom:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:var(--txt2);text-transform:uppercase">BOX SCORE · <span id="bs-n">0</span>/11</div>
+      <div id="bs-ovr" style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1;text-shadow:var(--glow-y)">—</div>
+    </div>
+    <div style="display:flex;gap:16px;margin-top:4px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px"><span id="bs-atk" style="color:var(--verde)">—</span><span style="font-size:10px;letter-spacing:1.5px;color:var(--txt2);margin-left:4px;font-family:'Barlow Condensed',sans-serif">ATAQUE</span></div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:16px"><span id="bs-def" style="color:#5bcbff">—</span><span style="font-size:10px;letter-spacing:1.5px;color:var(--txt2);margin-left:4px;font-family:'Barlow Condensed',sans-serif">DEFESA</span></div>
+    </div>
+  </div>
 
   <div class="draft-cols">
     <div class="draft-col-campo">
+      <!-- Formação + Tática -->
+      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
+        <div style="display:flex;gap:4px;flex:1">
+          <button class="form-btn sel" id="fb-433" onclick="mudarFormacao('4-3-3')">4-3-3</button>
+          <button class="form-btn" id="fb-442" onclick="mudarFormacao('4-4-2')">4-4-2</button>
+          <button class="form-btn" id="fb-424" onclick="mudarFormacao('4-2-4')">4-2-4</button>
+          <button class="form-btn" id="fb-352" onclick="mudarFormacao('3-5-2')">3-5-2</button>
+        </div>
+        <select id="tatica-sel" onchange="mudarTatica(this.value)" style="background:var(--c2);border:1px solid var(--c3);color:var(--txt);font-family:'Barlow Condensed',sans-serif;font-size:12px;padding:5px 8px;border-radius:8px;cursor:pointer;outline:none;flex-shrink:0">
+          <option value="neutro">⚖️ Neutro</option>
+          <option value="ataque">⚔️ Ataque</option>
+          <option value="defesa">🛡️ Defesa</option>
+        </select>
+      </div>
       <div class="campo">
         <div class="campo-bg">
     <div class="campo-centro"></div>
@@ -1277,13 +1306,46 @@ body::before{
 <script>
 const API='api.php';
 
-const FORMACAO=[
-  {k:'GOL',p:'GOL',num:1,linha:0},
-  {k:'LD',p:'LD',num:2,linha:1},{k:'ZAG1',p:'ZAG',num:3,linha:1},{k:'ZAG2',p:'ZAG',num:4,linha:1},{k:'LE',p:'LE',num:6,linha:1},
-  {k:'VOL',p:'VOL',num:5,linha:2},{k:'MEI1',p:'MEI',num:8,linha:2},{k:'MEI2',p:'MEI',num:10,linha:2},
-  {k:'PE',p:'PE',num:11,linha:3},{k:'ATA',p:'ATA',num:9,linha:3},{k:'PD',p:'PD',num:7,linha:3}
-];
-const LINHAS=[['GOL'],['LD','ZAG1','ZAG2','LE'],['VOL','MEI1','MEI2'],['PE','ATA','PD']];
+const FORMACOES_DEF={
+  '4-3-3':{
+    slots:[
+      {k:'GOL',p:'GOL',num:1},
+      {k:'LD',p:'LD',num:2},{k:'ZAG1',p:'ZAG',num:3},{k:'ZAG2',p:'ZAG',num:4},{k:'LE',p:'LE',num:6},
+      {k:'VOL',p:'VOL',num:5},{k:'MEI1',p:'MEI',num:8},{k:'MEI2',p:'MEI',num:10},
+      {k:'PE',p:'PE',num:11},{k:'ATA',p:'ATA',num:9},{k:'PD',p:'PD',num:7}
+    ],
+    linhas:[['GOL'],['LD','ZAG1','ZAG2','LE'],['VOL','MEI1','MEI2'],['PE','ATA','PD']]
+  },
+  '4-4-2':{
+    slots:[
+      {k:'GOL',p:'GOL',num:1},
+      {k:'LD',p:'LD',num:2},{k:'ZAG1',p:'ZAG',num:3},{k:'ZAG2',p:'ZAG',num:4},{k:'LE',p:'LE',num:6},
+      {k:'MEI1',p:'MEI',num:7},{k:'MEI2',p:'MEI',num:8},{k:'MEI3',p:'MEI',num:10},{k:'MEI4',p:'MEI',num:11},
+      {k:'ATA1',p:'ATA',num:9},{k:'ATA2',p:'ATA',num:10}
+    ],
+    linhas:[['GOL'],['LD','ZAG1','ZAG2','LE'],['MEI1','MEI2','MEI3','MEI4'],['ATA1','ATA2']]
+  },
+  '4-2-4':{
+    slots:[
+      {k:'GOL',p:'GOL',num:1},
+      {k:'LD',p:'LD',num:2},{k:'ZAG1',p:'ZAG',num:3},{k:'ZAG2',p:'ZAG',num:4},{k:'LE',p:'LE',num:6},
+      {k:'VOL1',p:'VOL',num:5},{k:'VOL2',p:'VOL',num:8},
+      {k:'PE',p:'PE',num:11},{k:'ATA1',p:'ATA',num:9},{k:'ATA2',p:'ATA',num:10},{k:'PD',p:'PD',num:7}
+    ],
+    linhas:[['GOL'],['LD','ZAG1','ZAG2','LE'],['VOL1','VOL2'],['PE','ATA1','ATA2','PD']]
+  },
+  '3-5-2':{
+    slots:[
+      {k:'GOL',p:'GOL',num:1},
+      {k:'ZAG1',p:'ZAG',num:3},{k:'ZAG2',p:'ZAG',num:4},{k:'ZAG3',p:'ZAG',num:5},
+      {k:'VOL1',p:'VOL',num:2},{k:'MEI1',p:'MEI',num:6},{k:'MEI2',p:'MEI',num:8},{k:'MEI3',p:'MEI',num:10},{k:'VOL2',p:'VOL',num:11},
+      {k:'ATA1',p:'ATA',num:9},{k:'ATA2',p:'ATA',num:7}
+    ],
+    linhas:[['GOL'],['ZAG1','ZAG2','ZAG3'],['VOL1','MEI1','MEI2','MEI3','VOL2'],['ATA1','ATA2']]
+  }
+};
+let FORMACAO=FORMACOES_DEF['4-3-3'].slots;
+let LINHAS=FORMACOES_DEF['4-3-3'].linhas;
 const NOMEPOS={GOL:'Goleiro',LD:'Lateral Direito',ZAG:'Zagueiro',LE:'Lateral Esquerdo',VOL:'Volante',MEI:'Meia',ATA:'Atacante',PE:'Ponta Esquerda',PD:'Ponta Direita'};
 function slotsDaPosicao(pos){return FORMACAO.filter(f=>f.p===pos).map(f=>f.k);}
 function slotsVagosDaPosicao(pos){return slotsDaPosicao(pos).filter(k=>!S.xi[k]);}
@@ -1304,6 +1366,8 @@ const S={
   conta:null,
   nomeTimeCustom:'',
   dificuldade:'facil',
+  formacaoKey:'4-3-3',
+  tatica:'neutro',
   xi:{},
   comboAtual:null,
   jogadorSel:null,
@@ -1416,6 +1480,24 @@ async function api(action,method='GET',body=null){
 
 function selModo(m){S.modo=m;S.rerollMax=(m==='memoria')?1:2;$('modo-classico').classList.toggle('sel',m==='classico');$('modo-memoria').classList.toggle('sel',m==='memoria')}
 function selDif(d){S.dificuldade=d;['facil','normal','dificil'].forEach(x=>$('dif-'+x)&&$('dif-'+x).classList.toggle('sel',x===d));}
+
+function mudarFormacao(key){
+  if(!FORMACOES_DEF[key])return;
+  S.formacaoKey=key;
+  FORMACAO=FORMACOES_DEF[key].slots;
+  LINHAS=FORMACOES_DEF[key].linhas;
+  // highlight button
+  const map={'4-3-3':'433','4-4-2':'442','4-2-4':'424','3-5-2':'352'};
+  Object.entries(map).forEach(([k,id])=>{
+    const b=$('fb-'+id); if(b) b.classList.toggle('sel', k===key);
+  });
+  // clear xi and redraw
+  S.xi={};S.jogadorSel=null;S.moverDe=null;
+  montarCampo(); atualizarProgresso();
+  const hint=$('draft-hint'); if(hint) hint.style.display='';
+  limparAlvos();
+}
+function mudarTatica(v){S.tatica=v;}
 function irHome(){tela('home')}
 function irConta(){tela('conta');carregarHistoricoConta()}
 async function irRanking(){
@@ -1793,10 +1875,21 @@ function adicionarLogDraft(pos,j){
 
 function limparAlvos(){document.querySelectorAll('.slot.alvo').forEach(s=>s.classList.remove('alvo'));}
 
+function ovrCor(r){
+  r=+r;
+  if(r>=90)return '#00E676';
+  if(r>=86)return '#2ecc71';
+  if(r>=80)return '#F4D03F';
+  if(r>=75)return '#E67E22';
+  return '#E74C3C';
+}
 function marcarSlot(k,j){
   const slot=$('slot-'+k);if(!slot)return;
   slot.classList.add('filled');slot.classList.remove('alvo');
-  slot.querySelector('.slot-ovr').textContent=S.modo==='classico'?j.rating:'★';
+  const ovrEl=slot.querySelector('.slot-ovr');
+  const rat=S.modo==='classico'?j.rating:'★';
+  ovrEl.textContent=rat;
+  ovrEl.style.color=S.modo==='classico'?ovrCor(j.rating):'#ccc';
   slot.querySelector('.slot-nome').textContent=nomeCurto(j.nome);
 }
 
@@ -1804,6 +1897,25 @@ function atualizarProgresso(){
   const n=preenchidos();
   $('draft-n').textContent=n;
   $('draft-fill').style.width=(n/11*100)+'%';
+
+  const bar=$('box-score-bar');
+  if(!bar) return;
+  if(n===0){ bar.style.display='none'; return; }
+  bar.style.display='block';
+
+  const DEF_POS=new Set(['GOL','ZAG','LAT','VOL']);
+  const jogadores=Object.values(S.xi);
+  const defJs=jogadores.filter(j=>DEF_POS.has(j.posicao));
+  const atkJs=jogadores.filter(j=>!DEF_POS.has(j.posicao));
+  const avg=arr=>arr.length?Math.round(arr.reduce((a,j)=>a+(+j.rating),0)/arr.length):null;
+
+  const ovr=Math.round(jogadores.reduce((a,j)=>a+(+j.rating),0)/jogadores.length);
+  const atk=avg(atkJs), def=avg(defJs);
+
+  $('bs-n').textContent=n;
+  $('bs-ovr').textContent=ovr;
+  $('bs-atk').textContent=atk!==null?atk:'—';
+  $('bs-def').textContent=def!==null?def:'—';
 }
 
 // ===== COPA433 =====
@@ -1848,7 +1960,7 @@ function montarAdversarios(){
       return {
         nome:c.time_nome, sigla:c.sigla, decada:c.decada,
         competicao:comp,
-        label:c.time_nome+(comp?' · '+comp:'')+' '+labelEra(c.decada),
+        label:c.time_nome+' '+String(c.decada),
         logo:logoDoTime(c.time_nome),
         ovr:adjOvr
       };
@@ -1955,9 +2067,11 @@ function jogarGrupo(){
     renderOutrosResultados(outrosLista);
     renderCopa();
     C.idxGrupo++;
-    C._next='grupo-next';
-    $('btn-proximo').textContent= C.idxGrupo>=C.meusJogosGrupo.length?'▶ VER CLASSIFICAÇÃO':'▶ PRÓXIMO JOGO';
-    $('btn-proximo').disabled=false;
+    // auto-avança para próximo jogo
+    setTimeout(()=>{
+      if(C.idxGrupo>=C.meusJogosGrupo.length){ encerrarGrupos(); }
+      else { prepararProximoJogoGrupo(); }
+    }, 1200);
   });
 }
 
@@ -2064,9 +2178,8 @@ function jogarMata(){
       const txt=C.rodadaMata==='final'?`CAMPEÃO 🏆 · ${sc}`:`Classificado · ${sc} vs ${esc(opp)}`;
       C.campanha.push({fase:FASE_NOME[C.rodadaMata],txt});
     }
-    C._next='mata-next';
-    $('btn-proximo').textContent='▶ AVANÇAR';
-    $('btn-proximo').disabled=false;
+    // auto-avança mata-mata
+    setTimeout(()=>{ avancarRodadaMata(); }, 1200);
   });
 }
 
@@ -2111,7 +2224,7 @@ function mostrarJogo(J){
   const _euFallback='<span style="font-size:38px;line-height:1">⚽</span>';
   $('m-home-badge').innerHTML=homeImg?`<img class="match-logo" src="${esc(homeImg)}" alt="${esc(J.home.label)}" style="${_imgStyle}">`:(J.home.eu?_euFallback:'<span style="font-size:34px">⚪</span>');
   $('m-away-badge').innerHTML=awayImg?`<img class="match-logo" src="${esc(awayImg)}" alt="${esc(J.away.label)}" style="${_imgStyle}">`:(J.away.eu?_euFallback:'<span style="font-size:34px">⚪</span>');
-  $('m-score').innerHTML='<span class="match-vs">VS</span>';
+  $('m-score').innerHTML='<span class="match-vs">0 – 0</span>';
   $('m-pen').textContent='';
   $('m-status').textContent='';
   const card=$('match-card');card.classList.toggle('eu-home',!!J.home.eu);card.classList.toggle('eu-away',!!J.away.eu);
@@ -2160,7 +2273,7 @@ function animarPlacar(J, onDone){
   $('tl-progress').style.width='0%';
   $('tl-min').textContent="0'";
   $('m-status').textContent='';
-  $('m-score').innerHTML='<span class="match-vs" id="m-vs">VS</span>';
+  $('m-score').textContent='0 – 0';
   $('m-pen').textContent='';
 
   const homeLabel = $('m-home-name').textContent;
@@ -2187,8 +2300,9 @@ function animarPlacar(J, onDone){
     const scorer=_euHome?(_escolherGoleador()||homeLabel):homeLabel;
     events.push({min:m, who:'home', icon:'⚽', label:scorer});
   });
+  const _nomesAdv=['Silva','Costa','Santos','Ferreira','Oliveira','Souza','Lima','Carvalho','Alves','Rodrigues','Martins','Pereira','Mendes','Barbosa','Nascimento','Cardoso','Moreira','Nunes','Castro','Araújo'];
   goalsA.forEach(m=>{
-    const scorer=_euAway?(_escolherGoleador()||awayLabel):awayLabel;
+    const scorer=_euAway?(_escolherGoleador()||awayLabel):_nomesAdv[Math.floor(Math.random()*_nomesAdv.length)];
     events.push({min:m, who:'away', icon:'⚽', label:scorer});
   });
   events.sort((a,b)=>a.min-b.min);
@@ -2335,7 +2449,7 @@ function fimDaCopa(campeao,msg){
   if(campeao)$('copa-trofeu').textContent='🏆';
 
   const shareDiv=document.createElement('div');
-  shareDiv.style.cssText='display:flex;gap:8px;justify-content:center;margin-top:12px';
+  shareDiv.style.cssText='display:flex;gap:8px;justify-content:center;margin:16px 0 8px';
   shareDiv.innerHTML=`<button class="btn btn-share" onclick="compartilharResultado()" style="flex:1;max-width:260px">📤 Compartilhar resultado</button>`;
   $('copa-area').insertAdjacentElement('afterbegin', shareDiv);
 
