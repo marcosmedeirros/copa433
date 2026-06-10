@@ -64,10 +64,13 @@ body::before{
 .btn-top{
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
   color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;
-  padding:7px 16px;border-radius:20px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:.2s;
+  padding:6px 10px;border-radius:20px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:.2s;
 }
 .btn-top:active{border-color:var(--gold);color:var(--gold);background:rgba(200,168,75,.08)}
 .btn-top.logado-btn{border-color:rgba(200,168,75,.3);color:var(--gold)}
+@media(min-width:480px){.btn-top{padding:7px 14px}}
+/* ocultar nav secundário em telas muito pequenas */
+@media(max-width:360px){.hdr-nav{display:none!important}}
 
 /* ── SCREENS ── */
 .screen{display:none;min-height:calc(100vh - 58px);padding-bottom:48px}
@@ -862,10 +865,11 @@ body::before{
 <header class="header">
   <div class="header-inner">
     <div class="h-logo">COPA<span>433</span></div>
-    <div style="display:flex;align-items:center;gap:8px" id="hdr-btns">
+    <div style="display:flex;align-items:center;gap:6px" id="hdr-btns">
       <button class="btn-top hdr-nav" id="hdr-home" onclick="irHome()" style="display:none">Início</button>
       <button class="btn-top hdr-nav" id="hdr-ranking" onclick="irRanking()" style="display:none">🏅 Ranking</button>
-      <button class="btn-top" id="btn-conta-hdr" onclick="abrirContaModal()">👤 Entrar</button>
+      <div id="hdr-rank-badge" style="display:none;font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--gold);background:rgba(200,168,75,.1);border:1px solid rgba(200,168,75,.25);border-radius:20px;padding:5px 10px;white-space:nowrap"></div>
+      <button class="btn-top logado-btn" id="btn-conta-hdr" onclick="abrirContaModal()">👤 Entrar</button>
     </div>
   </div>
 </header>
@@ -893,7 +897,7 @@ body::before{
       </div>
 
       <footer class="rodape" style="margin-top:auto;padding-top:32px">
-        Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
+        Feito por <a href="https://x.com/socram7v" target="_blank" rel="noopener">@socramv7</a>
       </footer>
     </div>
 
@@ -1009,9 +1013,9 @@ body::before{
   </div>
   <div class="center" style="margin-top:16px"><button class="btn btn-secondary btn-sm" onclick="irHome()">← Início</button></div>
   <footer class="rodape">
-    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">Marcos Medeiros</a>
+    Feito por <a href="https://x.com/socram7v" target="_blank" rel="noopener">Marcos Medeiros</a>
     <span class="sep">·</span>
-    <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
+    <a href="https://x.com/socram7v" target="_blank" rel="noopener">@socramv7</a>
   </footer>
   </div>
 </section>
@@ -1026,7 +1030,7 @@ body::before{
   <div id="rk-loading" style="text-align:center;padding:40px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:14px">Carregando...</div>
   <div class="rk-list" id="rk-list" style="display:none"></div>
   <footer class="rodape" style="margin-top:24px">
-    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
+    Feito por <a href="https://x.com/socram7v" target="_blank" rel="noopener">@socramv7</a>
   </footer>
   </div>
 </section>
@@ -1174,9 +1178,9 @@ body::before{
   </div>
 
   <footer class="rodape">
-    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">Marcos Medeiros</a>
+    Feito por <a href="https://x.com/socram7v" target="_blank" rel="noopener">Marcos Medeiros</a>
     <span class="sep">·</span>
-    <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
+    <a href="https://x.com/socram7v" target="_blank" rel="noopener">@socramv7</a>
   </footer>
 </section>
 
@@ -1415,7 +1419,7 @@ const LOGO_MAP = [
   [['arsenal'],                                              'arsenal.png'],
   [['atletico mineiro','atleticomineiro','galo'],            'atleticomineiro.png'],
   [['atletico nacional','atleticonacional'],                 'atleticonacional.png'],
-  [['bahia'],                                                'bahia.png'],
+  [['ecbahia','bahia'],                                      'ecbahia.png'],
   [['barcelona','barca'],                                    'barcelona.png'],
   [['bayer','leverkusen','bayerleverkusen'],                 'bayerleverkusen.png'],
   [['bayern','munique','munich','bayernmunchen'],            'bayernmunchen.png'],
@@ -1534,14 +1538,12 @@ async function irRanking(){
       const pos=medals[i]||(i+1);
       const escudo=r.escudo?`<img src="${r.escudo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`:
         `<div style="width:36px;height:36px;border-radius:50%;background:var(--c3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚽</div>`;
-      const ligaR = ligaDosPts(parseInt(r.pontos||0));
-      const nomeTime=r.nome_time&&r.nome_time!=='Meu Time'?r.nome_time:'';
-      return `<div class="rk-i">
-        <div class="rk-p" style="min-width:32px;text-align:center">${pos}</div>
+      const euClass=S.conta&&S.conta.usuario===r.usuario?'border-color:rgba(0,230,118,.4);background:rgba(0,230,118,.04)':'';
+      return `<div class="rk-i" style="${euClass}">
+        <div class="rk-p" style="min-width:28px;text-align:center">${pos}</div>
         ${escudo}
-        <div class="rk-info">
-          <div class="rk-u">@${esc(r.usuario)}${nomeTime?` <span style="font-weight:400;color:var(--txt2);font-size:13px">· ${esc(nomeTime)}</span>`:''}</div>
-          <div class="rk-s">${r.jogos} jogo${r.jogos!=1?'s':''} · OVR max ${r.melhor_ovr}</div>
+        <div class="rk-info" style="flex:1;min-width:0">
+          <div class="rk-u">@${esc(r.usuario)}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div class="rk-pts">${r.titulos}</div>
@@ -1549,6 +1551,16 @@ async function irRanking(){
         </div>
       </div>`;
     }).join('');
+    // posição do usuário logado no header
+    if(S.conta){
+      const idx=rows.findIndex(r=>r.usuario===S.conta.usuario);
+      const badge=$('hdr-rank-badge');
+      if(badge&&idx>=0){
+        const pos=idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':`#${idx+1}`;
+        badge.textContent=pos+' Ranking';
+        badge.style.display='block';
+      }
+    }
     $('rk-loading').style.display='none';
     $('rk-list').style.display='flex';
     $('rk-list').style.flexDirection='column';
@@ -2537,11 +2549,30 @@ function mostrarToast(msg){
 function atualizarUIconta(){
   const u=S.conta;
   const hdr=$('btn-conta-hdr');
+  const badge=$('hdr-rank-badge');
   if(u){
     hdr.textContent='👤 @'+u.usuario;
+    carregarPosicaoRanking();
   }else{
     hdr.textContent='👤 Entrar';
+    if(badge) badge.style.display='none';
   }
+}
+
+async function carregarPosicaoRanking(){
+  const badge=$('hdr-rank-badge');
+  if(!badge||!S.conta) return;
+  try{
+    const rows=await api('ranking_global');
+    const idx=rows.findIndex(r=>r.usuario===S.conta.usuario);
+    if(idx>=0){
+      const pos=idx===0?'🥇':idx===1?'🥈':idx===2?'🥉':`#${idx+1}`;
+      badge.textContent=pos+' Ranking';
+      badge.style.display='block';
+    } else {
+      badge.style.display='none';
+    }
+  }catch(e){ badge.style.display='none'; }
 }
 async function contaStatus(){
   try{
