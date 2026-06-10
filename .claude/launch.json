@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "copa433",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d C:\\Users\\marco\\OneDrive\\Documentos\\copa433 && python -m http.server 7433"],
+      "port": 7433
+    }
+  ]
+}

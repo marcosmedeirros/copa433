@@ -240,22 +240,33 @@ switch ($action) {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
             ");
 
+            // Detecta colunas opcionais da tabela times
+            $hasSigla       = hasColumn($pdo, 'times', 'sigla');
+            $hasEraT        = hasColumn($pdo, 'times', 'era');
+            $hasOvrT        = hasColumn($pdo, 'times', 'ovr');
+            $hasCompT       = hasColumn($pdo, 'times', 'competicao');
+            $colSiglaSelect = $hasSigla ? 'sigla'       : "UPPER(SUBSTRING(nome, 1, 4)) AS sigla";
+            $colSiglaJoin   = $hasSigla ? 't.sigla'     : "UPPER(SUBSTRING(t.nome, 1, 4)) AS sigla";
             $colCorPrimaria = hasColumn($pdo, 'times', 'cor_primaria') ? 'cor_primaria' : "NULL AS cor_primaria";
-            $times = $pdo->query("SELECT id, nome, sigla, $colCorPrimaria FROM times ORDER BY nome")->fetchAll();
+            $colEraSelect   = $hasEraT  ? 'era'         : "NULL AS era";
+            $colOvrSelect   = $hasOvrT  ? 'ovr'         : "NULL AS ovr";
+            $colCompSelect  = $hasCompT ? 'competicao'  : "NULL AS competicao";
+
+            $times = $pdo->query("SELECT id, nome, $colSiglaSelect, $colEraSelect, $colOvrSelect, $colCompSelect, $colCorPrimaria FROM times ORDER BY nome")->fetchAll();
 
             if (empty($times)) {
                 echo json_encode(['times' => [], 'jogadores' => [], 'combos' => [], 'aviso' => 'Banco sem times. Importe o SQL de seed.']);
                 break;
             }
 
-            $colPos    = hasColumn($pdo, 'jogadores', 'posicoes') ? 'posicoes' : (hasColumn($pdo, 'jogadores', 'posicao') ? 'posicao' : 'NULL');
-            $colTipoJog  = hasColumn($pdo, 'jogadores', 'tipo') ? 'j.tipo' : 'NULL';
-            $colTipoTime = hasColumn($pdo, 'times', 'tipo')     ? 't.tipo' : 'NULL';
+            $colPos      = hasColumn($pdo, 'jogadores', 'posicoes') ? 'posicoes' : (hasColumn($pdo, 'jogadores', 'posicao') ? 'posicao' : 'NULL');
+            $colTipoJog  = hasColumn($pdo, 'jogadores', 'tipo') ? 'j.tipo' : (hasColumn($pdo, 'jogadores', 'era') ? 'j.era' : 'NULL');
+            $colTipoTime = hasColumn($pdo, 'times', 'tipo')     ? 't.tipo' : ($hasEraT ? 't.era' : 'NULL');
 
             $jogs = $pdo->query("
                 SELECT j.id, j.nome, j.$colPos AS pos_raw, j.rating, j.time_id,
                        COALESCE($colTipoJog, $colTipoTime, 'GERAL') AS tipo,
-                       t.nome AS time_nome, t.sigla
+                       t.nome AS time_nome, $colSiglaJoin
                 FROM jogadores j
                 JOIN times t ON t.id = j.time_id
                 ORDER BY j.rating DESC, j.nome ASC
@@ -331,10 +342,12 @@ switch ($action) {
         break;
 
     case 'ranking':
-        $temDecada = hasColumn($pdo, 'rankings', 'decada_sorteada');
+        $temDecada    = hasColumn($pdo, 'rankings', 'decada_sorteada');
+        $hasSiglaRk   = hasColumn($pdo, 'times', 'sigla');
+        $colSiglaRk   = $hasSiglaRk ? 't.sigla' : "UPPER(SUBSTRING(t.nome,1,4)) AS sigla";
         $sql = "
             SELECT r.usuario, r.pontos, r.criado_em,
-                   t.nome AS time_nome, t.sigla" . ($temDecada ? ", r.decada_sorteada" : "") . "
+                   t.nome AS time_nome, $colSiglaRk" . ($temDecada ? ", r.decada_sorteada" : "") . "
             FROM rankings r
             JOIN times t ON t.id = r.time_sorteado
             ORDER BY r.pontos DESC, r.criado_em ASC
