@@ -557,6 +557,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </footer>
 </section>
 
+<!-- RANKING -->
+<section id="screen-ranking" class="screen">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 0 16px">
+    <div class="rk-t" style="padding:0">🏅 RANKING</div>
+    <button class="btn btn-secondary btn-sm" onclick="irHome()" style="width:auto">← Início</button>
+  </div>
+  <div id="rk-loading" style="text-align:center;padding:40px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:14px">Carregando...</div>
+  <div class="rk-list" id="rk-list" style="display:none"></div>
+  <footer class="rodape" style="margin-top:24px">
+    Feito por <a href="https://www.instagram.com/marcosmedeirros/" target="_blank" rel="noopener">@marcosmedeirros</a>
+  </footer>
+</section>
+
 <!-- DRAFT -->
 <section id="screen-draft" class="screen">
   <div class="draft-top">
@@ -871,19 +884,46 @@ function nomeCurto(nome){
 }
 function chaveJogador(j){return (j.nome_base||j.nome||'').toLowerCase();}
 function posicoesJogador(j){return (j.posicoes&&j.posicoes.length)?j.posicoes:[j.posicao];}
-function slugLogo(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');}
-const LOGOS_DISP=[
-  'AC_Milan_2003.svg','AC_Milan_2007.svg','Atletico_MG_2013.svg','Atl_Nacional_2016.png','Bahia_1988.svg','Barcelona_2006.svg','Barcelona_2009.svg','Barcelona_2011.svg','Barcelona_2015.svg','Bayern_de_Munique_2001.svg','Bayern_de_Munique_2013.svg','Bayern_de_Munique_2020.svg','Boca_Juniors_2000.svg','Boca_Juniors_2001.svg','Boca_Juniors_2003.svg','Boca_Juniors_2007.svg','Borussia_Dortmund_1997.svg','Botafogo_1962.svg','Chelsea_2012.svg','Chelsea_2021.svg','Colo_Colo_1991.svg','Coritiba_1985.svg','Estrela_Vermelha_1991.svg','FC_Porto_2004.png','Fluminense_2023.png','Gremio_2017.svg','Independiente_1975.svg','Inter_de_Milao_2010.svg','Juventus_2015.svg','Liverpool_2005.svg','Liverpool_2019.svg','Manchester_United_2008.svg','Nacional_1988.png','Olympique_Marseille_1993.svg','Once_Caldas_2004.svg','Palmeiras_2020.svg','Palmeiras_2021.svg','Real_Madrid_2000.svg','Real_Madrid_2002.svg','Real_Madrid_2014.svg','Real_Madrid_2016.svg','Real_Madrid_2017.svg','Real_Madrid_2018.svg','Real_Madrid_2022.svg','Real_Madrid_2024.svg','River_Plate_2015.svg','River_Plate_2018.svg','Santos_2011.png','Steaua_Bucareste_1986.svg','Velez_Sarsfield_1994.svg'
+// Mapa: palavras-chave do nome do time \u2192 arquivo em logos_futebol/
+const LOGO_MAP = [
+  [['atletico','mineiro','atleticomineiro','galo'],          'atleticomineiro.png'],
+  [['atletico','nacional','atleticonacional'],               'atleticonacional.png'],
+  [['bahia'],                                                'bahia.png'],
+  [['barcelona','barca'],                                    'barcelona.png'],
+  [['bayern','munique','munich'],                            'bayern.png'],
+  [['boca','juniors','bocajuniors'],                         'bocajuniors.png'],
+  [['botafogo'],                                             'botafogo.png'],
+  [['chelsea'],                                              'chelsea.png'],
+  [['colo','colo','colocolo'],                               'colocolo.png'],
+  [['coritiba'],                                             'coritiba.png'],
+  [['dortmund','borussia'],                                  'dortmund.png'],
+  [['estrela','vermelha','estrelavermelha','red star'],      'estrelavermelha.png'],
+  [['fluminense'],                                           'fluminense.png'],
+  [['gremio','gr\u00eamio'],                                      'gremio.png'],
+  [['independiente'],                                        'independiente.png'],
+  [['inter','milao','internazionale','intermilao'],          'intermilao.png'],
+  [['juventus'],                                             'juventus.png'],
+  [['liverpool'],                                            'liverpool.png'],
+  [['manchester','united','manchesterunited'],               'manchesterunited.png'],
+  [['marseille','olympique','marsella'],                     'marseille.png'],
+  [['milan','ac milan'],                                     'milan.png'],
+  [['nacional'],                                             'nacional.png'],
+  [['once','caldas','oncecaldas'],                           'oncecaldas.png'],
+  [['palmeiras'],                                            'palmeiras.webp'],
+  [['porto','fc porto'],                                     'porto.png'],
+  [['real madrid','realmadrid'],                             'realmadrid.png'],
+  [['river','plate','riverplate'],                           'riverplate.png'],
+  [['santos'],                                               'santos.png'],
+  [['steaua','bucareste'],                                   'steaua.png'],
+  [['velez','sarsfield'],                                    'velez.png'],
 ];
-function logoDoTime(nome,era){
-  const base=slugLogo(nome), ano=String(era||'').replace(/[^\d]/g,'');
-  const exts=['svg','png'];
-  for(const e of exts){
-    const f=`${base}_${ano}.${e}`;
-    if(LOGOS_DISP.includes(f))return `logos_futebol/${f}`;
+function logoDoTime(nome){
+  if(!nome)return '';
+  const n=String(nome).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  for(const [keys,file] of LOGO_MAP){
+    if(keys.some(k=>n.includes(k))) return 'logos_futebol/'+file;
   }
-  const achou=LOGOS_DISP.find(f=>f.startsWith(base+'_'));
-  return achou?`logos_futebol/${achou}`:'';
+  return '';
 }
 function slotsVagosDoJogador(j){
   const set=new Set();
@@ -905,7 +945,42 @@ function selModo(m){S.modo=m;S.rerollMax=(m==='memoria')?1:2;$('modo-classico').
 function selDif(d){S.dificuldade=d;['facil','normal','dificil'].forEach(x=>$('dif-'+x)&&$('dif-'+x).classList.toggle('sel',x===d));}
 function irHome(){tela('home')}
 function irConta(){tela('conta');carregarHistoricoConta()}
-function irRanking(){tela('ranking');}
+async function irRanking(){
+  tela('ranking');
+  $('rk-loading').style.display='block';
+  $('rk-list').style.display='none';
+  try{
+    const rows=await api('ranking_global');
+    const medals=['🥇','🥈','🥉'];
+    if(!rows.length){
+      $('rk-loading').textContent='Nenhuma partida registrada ainda. Seja o primeiro! 🏆';
+      return;
+    }
+    $('rk-list').innerHTML=rows.map((r,i)=>{
+      const pos=medals[i]||(i+1);
+      const escudo=r.escudo?`<img src="${r.escudo}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0">`:
+        `<div style="width:36px;height:36px;border-radius:50%;background:var(--c3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">⚽</div>`;
+      const nomeTime=r.nome_time&&r.nome_time!=='Meu Time'?r.nome_time:'';
+      return `<div class="rk-i">
+        <div class="rk-p" style="min-width:32px;text-align:center">${pos}</div>
+        ${escudo}
+        <div class="rk-info">
+          <div class="rk-u">@${esc(r.usuario)}${nomeTime?` <span style="font-weight:400;color:var(--txt2);font-size:13px">· ${esc(nomeTime)}</span>`:''}</div>
+          <div class="rk-s">${r.jogos} jogo${r.jogos!=1?'s':''} · OVR max ${r.melhor_ovr}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="rk-pts">${r.titulos}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;color:var(--txt2);letter-spacing:1px">TÍTULO${r.titulos!=1?'S':''}</div>
+        </div>
+      </div>`;
+    }).join('');
+    $('rk-loading').style.display='none';
+    $('rk-list').style.display='flex';
+    $('rk-list').style.flexDirection='column';
+  }catch(e){
+    $('rk-loading').textContent='Erro ao carregar ranking.';
+  }
+}
 
 // ===== INICIAR DRAFT =====
 async function comecarDraft(){
@@ -1034,11 +1109,14 @@ function girarRoleta(){
   $('escolha-lista').classList.remove('show');
   limparAlvos();
 
-  const siglas=S.times.map(t=>t.sigla);
+  // Monta array de times com sigla (chave) + logo para display
+  const timesArr=S.times.map(t=>({sigla:t.sigla,logo:logoDoTime(t.nome)}));
+  const siglas=timesArr.map(t=>t.sigla);
+
   const decadasUnicas=[...new Set(todosCombos().map(c=>c.decada))].sort((a,b)=>String(a).localeCompare(String(b)));
   const decLabels=decadasUnicas.map(d=>labelEraCurto(d));
 
-  montarStrip($('strip-time'),siglas);
+  montarStripTime($('strip-time'),timesArr);
   montarStrip($('strip-dec'),decLabels);
 
   let prontos=0;
@@ -1046,6 +1124,21 @@ function girarRoleta(){
 
   animar($('strip-time'),siglas,alvo.sigla,1800,fim);
   animar($('strip-dec'),decLabels,labelEraCurto(alvo.decada),2100,fim);
+}
+
+// Strip de times com logo
+function montarStripTime(strip,timesArr,rep=8){
+  let h='';
+  for(let r=0;r<rep;r++){
+    for(const t of timesArr){
+      if(t.logo){
+        h+=`<div class="rw-cell"><img src="${esc(t.logo)}" alt="${esc(t.sigla)}" style="width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))"></div>`;
+      } else {
+        h+=`<div class="rw-cell">${esc(t.sigla)}</div>`;
+      }
+    }
+  }
+  strip.innerHTML=h;
 }
 
 function montarStrip(strip,valores,rep=8){
@@ -1077,7 +1170,7 @@ function mostrarCombo(combo){
   S.comboAtual=combo;
   S.jogadorSel=null;
   limparAlvos();
-  const lg=logoDoTime(combo.time_nome,combo.decada);
+  const lg=logoDoTime(combo.time_nome);
   $('combo-result').innerHTML=`${lg?`<img class="combo-logo" src="${esc(lg)}" alt="${esc(combo.time_nome)}">`:''}<b>${esc(combo.time_nome)}</b> · ${labelEra(combo.decada)}`;
   $('combo-result').classList.add('show');
   $('squad-sigla').textContent=combo.sigla+' · '+labelEra(combo.decada);
@@ -1314,7 +1407,7 @@ function montarAdversarios(){
         nome:c.time_nome, sigla:c.sigla, decada:c.decada,
         competicao:comp,
         label:c.time_nome+(comp?' · '+comp:'')+' '+labelEra(c.decada),
-        logo:logoDoTime(c.time_nome,c.decada),
+        logo:logoDoTime(c.time_nome),
         ovr:adjOvr
       };
     });
@@ -1588,8 +1681,8 @@ function mostrarJogo(J){
   $('m-away-name').textContent=J.away.label;
   $('m-home-ovr').textContent='OVR '+J.home.ovr;
   $('m-away-ovr').textContent='OVR '+J.away.ovr;
-  const lgH=logoDoTime(J.home.nome||J.home.label,J.home.decada||'');
-  const lgA=logoDoTime(J.away.nome||J.away.label,J.away.decada||'');
+  const lgH=logoDoTime(J.home.nome||J.home.label);
+  const lgA=logoDoTime(J.away.nome||J.away.label);
   const escudoMeu=S.conta?.escudo;
   const homeImg=J.home.eu&&escudoMeu?escudoMeu:lgH;
   const awayImg=J.away.eu&&escudoMeu?escudoMeu:lgA;

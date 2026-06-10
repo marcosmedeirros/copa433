@@ -476,6 +476,28 @@ switch ($action) {
         echo json_encode($pdo->query($sql)->fetchAll());
         break;
 
+    case 'ranking_global':
+        if (!iniciarModuloConta($pdo)) break;
+        $sql = "
+            SELECT u.usuario, u.nome_time, u.escudo,
+                   COUNT(p.id) AS jogos,
+                   SUM(p.campeao) AS titulos,
+                   MAX(p.pontos) AS melhor_pontos,
+                   MAX(p.ovr) AS melhor_ovr
+            FROM usuarios u
+            JOIN partidas_usuario p ON p.usuario_id = u.id
+            GROUP BY u.id
+            ORDER BY titulos DESC, melhor_pontos DESC
+            LIMIT 50
+        ";
+        try {
+            $rows = $pdo->query($sql)->fetchAll();
+        } catch (Throwable $e) {
+            $rows = [];
+        }
+        echo json_encode($rows);
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['erro' => 'Acao invalida']);
